@@ -1,4 +1,8 @@
-use crate::matrix::IMatrix;
+mod common;
+
+use common::matrix::DotProduct;
+use common::matrix::IMatrix;
+
 use std::error::Error;
 use std::io;
 use std::process;

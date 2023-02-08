@@ -1,9 +1,10 @@
-pub mod matrix;
+use csv::StringRecord;
 
 pub trait DotProduct {
     fn dot_product(&self, other: &Self) -> Self;
 }
 
+#[derive(Debug, PartialEq)]
 pub struct IMatrix {
     rows: usize,
     cols: usize,
@@ -31,7 +32,7 @@ impl DotProduct for IMatrix {
     }
 }
 
-fn create_vec_from_csv(rdr: StringRecord) -> Vec<Vec<f64>> {
+pub fn create_vec_from_csv(rdr: StringRecord) -> Vec<Vec<f64>> {
     let mut vec = vec![];
     for result in rdr.records() {
         let record = result.unwrap();
