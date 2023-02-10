@@ -1,5 +1,10 @@
+extern crate common;
+
+use rustnet::common::matrix::IMatrix;
+
 #[cfg(test)]
 mod tests {
+
     #[test]
     fn test_dot_product() {
         let matrix1 = IMatrix {

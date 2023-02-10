@@ -1,4 +1,6 @@
-use csv::StringRecord;
+use std::io::Stdin;
+
+use crate::Reader;
 
 pub trait DotProduct {
     fn dot_product(&self, other: &Self) -> Self;
@@ -6,9 +8,9 @@ pub trait DotProduct {
 
 #[derive(Debug, PartialEq)]
 pub struct IMatrix {
-    rows: usize,
-    cols: usize,
-    data: Vec<Vec<f64>>,
+    pub(crate) rows: usize,
+    pub(crate) cols: usize,
+    pub(crate) data: Vec<Vec<f64>>,
 }
 
 impl DotProduct for IMatrix {
@@ -32,10 +34,11 @@ impl DotProduct for IMatrix {
     }
 }
 
-pub fn create_vec_from_csv(rdr: StringRecord) -> Vec<Vec<f64>> {
+pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f64>> {
     let mut vec = vec![];
     for result in rdr.records() {
         let record = result.unwrap();
+
         vec.push(
             record
                 .iter()
