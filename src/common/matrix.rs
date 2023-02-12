@@ -1,6 +1,6 @@
 use std::io::Stdin;
 
-use crate::Reader;
+use csv::Reader;
 
 pub trait DotProduct {
     fn dot_product(&self, other: &Self) -> Self;
@@ -8,9 +8,9 @@ pub trait DotProduct {
 
 #[derive(Debug, PartialEq)]
 pub struct IMatrix {
-    pub(crate) rows: usize,
-    pub(crate) cols: usize,
-    pub(crate) data: Vec<Vec<f64>>,
+    pub rows: usize,
+    pub cols: usize,
+    pub data: Vec<Vec<f64>>,
 }
 
 impl DotProduct for IMatrix {
@@ -34,6 +34,7 @@ impl DotProduct for IMatrix {
     }
 }
 
+#[allow(dead_code)]
 pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f64>> {
     let mut vec = vec![];
     for result in rdr.records() {

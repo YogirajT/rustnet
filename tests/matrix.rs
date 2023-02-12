@@ -1,9 +1,6 @@
-extern crate common;
-
-use rustnet::common::matrix::IMatrix;
-
 #[cfg(test)]
 mod tests {
+    use rustnet::common::matrix::{DotProduct, IMatrix};
 
     #[test]
     fn test_dot_product() {
@@ -27,7 +24,7 @@ mod tests {
 
     #[test]
     #[should_panic(
-        expected = "The number of columns in the first matrix must be equal to the number of rows in the second matrix!"
+        expected = "The number of columns in the first matrix must be equal to the number of rows in the second matrix"
     )]
     fn test_dot_product_invalid_dimensions() {
         let matrix1 = IMatrix {
