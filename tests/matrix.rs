@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use rustnet::common::matrix::{DotProduct, IMatrix};
+    use rustnet::common::matrix::{transpose, DotProduct, IMatrix};
 
     #[test]
     fn test_dot_product() {
@@ -43,5 +43,13 @@ mod tests {
             ],
         };
         matrix1.dot_product(&matrix2);
+    }
+
+    #[test]
+    fn test_transpose() {
+        let matrix = vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]];
+        let expected = vec![vec![1, 4, 7], vec![2, 5, 8], vec![3, 6, 9]];
+        let result = transpose(&matrix);
+        assert_eq!(result, expected);
     }
 }

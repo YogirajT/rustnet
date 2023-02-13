@@ -4,18 +4,30 @@ use common::matrix::DotProduct;
 use common::matrix::IMatrix;
 
 use csv::Reader;
+use rustnet::common::matrix::create_vec_from_csv;
+use rustnet::common::matrix::shuffle_matrix;
+use rustnet::common::matrix::split_matrix;
+use rustnet::common::matrix::transpose;
 use std::error::Error;
 use std::io;
 use std::process;
 
-fn example() -> Result<(), Box<dyn Error>> {
-    let mut reader = Reader::from_reader(io::stdin());
+fn init() -> Result<(), Box<dyn Error>> {
+    let reader = Reader::from_reader(io::stdin());
 
-    for result in reader.records() {
-        let record = result.unwrap();
-        println!("Name: {:?}", record);
-        break;
-    }
+    let mut matrix = create_vec_from_csv(reader);
+
+    shuffle_matrix(&mut matrix);
+
+    let (dev_set, test_set) = split_matrix(&matrix, 5000);
+
+    let transposed_dev_matrix = transpose(&dev_set);
+
+    let _transposed_test_set = transpose(&test_set);
+
+    let (_dev_labels, _dev_data) = split_matrix(&transposed_dev_matrix, 1);
+
+    println!("{:?}", _dev_labels[0].len());
 
     Ok(())
 }
@@ -37,7 +49,7 @@ fn main() {
 
     println!("{:?}", product);
 
-    if let Err(err) = example() {
+    if let Err(err) = init() {
         println!("error running example: {}", err);
         process::exit(1);
     }
