@@ -1,13 +1,13 @@
 mod common;
 
-use common::matrix::DotProduct;
-use common::matrix::IMatrix;
-
 use csv::Reader;
 use rustnet::common::matrix::create_vec_from_csv;
+use rustnet::common::matrix::dot_product;
+use rustnet::common::matrix::get_network_params;
 use rustnet::common::matrix::shuffle_matrix;
 use rustnet::common::matrix::split_matrix;
 use rustnet::common::matrix::transpose;
+use rustnet::common::network_functions::forward_propagation;
 use std::error::Error;
 use std::io;
 use std::process;
@@ -27,30 +27,28 @@ fn init() -> Result<(), Box<dyn Error>> {
 
     let (_dev_labels, _dev_data) = split_matrix(&transposed_dev_matrix, 1);
 
-    println!("{:?}", _dev_labels[0].len());
+    let network_params = get_network_params();
+
+    println!("{:?}", _dev_data[0].len());
+
+    let l1 = forward_propagation(network_params, _dev_data);
+
+    println!("{:?}", l1.len());
 
     Ok(())
 }
 
 fn main() {
-    let matrix1 = IMatrix {
-        rows: 2,
-        cols: 3,
-        data: vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]],
-    };
+    let matrix1 = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
 
-    let matrix2 = IMatrix {
-        rows: 3,
-        cols: 2,
-        data: vec![vec![7.0, 8.0], vec![9.0, 10.0], vec![11.0, 12.0]],
-    };
+    let matrix2 = vec![vec![7.0, 8.0], vec![9.0, 10.0], vec![11.0, 12.0]];
 
-    let product = matrix2.dot_product(&matrix1);
+    let product = dot_product(&matrix1, &matrix2);
 
-    println!("{:?}", product);
+    println!("{product:?}");
 
     if let Err(err) = init() {
-        println!("error running example: {}", err);
+        println!("error running example: {err}");
         process::exit(1);
     }
 }
