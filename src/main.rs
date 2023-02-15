@@ -29,11 +29,7 @@ fn init() -> Result<(), Box<dyn Error>> {
 
     let network_params = get_network_params();
 
-    println!("{:?}", _dev_data[0].len());
-
     let l1 = forward_propagation(network_params, _dev_data);
-
-    println!("{:?}", l1.len());
 
     Ok(())
 }

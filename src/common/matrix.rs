@@ -119,3 +119,17 @@ pub fn get_network_params() -> NetworkParams {
 
     (w_1, b_1, w_2, b_2)
 }
+
+#[allow(dead_code)]
+pub fn matrix_addition(matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    let bias_first_col = bias.last().unwrap();
+    matrix
+        .iter()
+        .map(|row| {
+            row.iter()
+                .zip(bias_first_col.iter())
+                .map(|(&m, &v)| m + v)
+                .collect()
+        })
+        .collect()
+}
