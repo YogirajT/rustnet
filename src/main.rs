@@ -2,11 +2,11 @@ mod common;
 
 use csv::Reader;
 use rustnet::common::matrix::create_vec_from_csv;
-use rustnet::common::matrix::dot_product;
 use rustnet::common::matrix::get_network_params;
 use rustnet::common::matrix::shuffle_matrix;
 use rustnet::common::matrix::split_matrix;
 use rustnet::common::matrix::transpose;
+use rustnet::common::network_functions::back_propagation;
 use rustnet::common::network_functions::forward_propagation;
 use std::error::Error;
 use std::io;
@@ -27,22 +27,16 @@ fn init() -> Result<(), Box<dyn Error>> {
 
     let (_dev_labels, _dev_data) = split_matrix(&transposed_dev_matrix, 1);
 
-    let network_params = get_network_params();
+    let (w_1, b_1, w_2, b_2) = get_network_params();
 
-    let l1 = forward_propagation(network_params, _dev_data);
+    let forward_prop = forward_propagation((w_1, b_1, w_2.clone(), b_2), _dev_data);
+
+    back_propagation(forward_prop, &w_2, _dev_labels);
 
     Ok(())
 }
 
 fn main() {
-    let matrix1 = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
-
-    let matrix2 = vec![vec![7.0, 8.0], vec![9.0, 10.0], vec![11.0, 12.0]];
-
-    let product = dot_product(&matrix1, &matrix2);
-
-    println!("{product:?}");
-
     if let Err(err) = init() {
         println!("error running example: {err}");
         process::exit(1);

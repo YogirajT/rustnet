@@ -7,8 +7,8 @@ use std::clone::Clone;
 use std::io::Stdin;
 
 pub enum Operation {
-    SUBTRACT,
-    ADD,
+    Subtract,
+    Add,
 }
 
 pub fn dot_product(matrix_1: &Vec<Vec<f64>>, matrix_2: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
@@ -118,24 +118,29 @@ pub fn get_network_params() -> NetworkParams {
 }
 
 pub fn linear_op(action: Operation, matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> Vec<Vec<f64>> {
-    let bias_first_col = match bias {
-        [x] => x,
-        _ => panic!("expected single element"),
-    };
     matrix
         .iter()
-        .map(|row| {
-            row.iter()
-                .zip(bias_first_col.iter())
-                .map(|(&m, &v)| {
-                    if matches!(action, Operation::SUBTRACT) {
-                        m - v
+        .zip(bias.iter())
+        .map(|(m_row, b_row)| {
+            let bias_term = b_row.clone()[0];
+            m_row
+                .iter()
+                .map(|&m| {
+                    if matches!(action, Operation::Subtract) {
+                        m - bias_term
                     } else {
-                        m + v
+                        m + bias_term
                     }
                 })
                 .collect()
         })
+        .collect()
+}
+
+pub fn multiplication(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
+    matrix
+        .iter()
+        .map(|row| row.iter().map(|&m| m * coeff).collect())
         .collect()
 }
 
@@ -157,4 +162,14 @@ pub fn one_hot(matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> Vec<Vec<f64>> {
 
 pub fn zeroes(rows: usize, cols: usize) -> Vec<Vec<f64>> {
     vec![vec![0.0; cols]; rows]
+}
+
+fn sum_2d_vector(matrix: &[Vec<f64>]) -> f64 {
+    let mut sum = 0.0;
+    for row in matrix.iter() {
+        for &val in row.iter() {
+            sum += val;
+        }
+    }
+    sum
 }
