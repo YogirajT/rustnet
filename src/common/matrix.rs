@@ -11,7 +11,7 @@ pub enum Operation {
     Add,
 }
 
-pub fn dot_product(matrix_1: &Vec<Vec<f64>>, matrix_2: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+pub fn dot_product(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let m1_rows = matrix_1.len();
     let m1_cols = matrix_1[0].len();
     let m2_rows = matrix_2.len();
@@ -118,30 +118,57 @@ pub fn get_network_params() -> NetworkParams {
 }
 
 pub fn linear_op(action: Operation, matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    let row_len = matrix.len();
+    let col_len = matrix.first().unwrap().len();
+    let mut result = vec![vec![0.0; col_len]; row_len];
+
+    for (i, row) in matrix.iter().enumerate() {
+        let bias_row = bias.get(i).unwrap();
+        let bias_term = bias_row.first().unwrap();
+        for (j, cell) in row.iter().enumerate() {
+            if matches!(action, Operation::Subtract) {
+                result[i][j] = *cell - *bias_term
+            } else {
+                result[i][j] = *cell + *bias_term
+            }
+        }
+    }
+    result
+}
+
+pub fn multiply(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
+    let row_len = matrix.len();
+    let col_len = matrix.first().unwrap().len();
+    let mut result = vec![vec![0.0; col_len]; row_len];
+
+    for (i, row) in matrix.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate() {
+            result[i][j] = *cell - coeff;
+        }
+    }
+
+    result
+}
+
+pub fn divide(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
     matrix
         .iter()
-        .zip(bias.iter())
-        .map(|(m_row, b_row)| {
-            let bias_term = b_row.clone()[0];
-            m_row
-                .iter()
-                .map(|&m| {
-                    if matches!(action, Operation::Subtract) {
-                        m - bias_term
-                    } else {
-                        m + bias_term
-                    }
-                })
-                .collect()
-        })
+        .map(|row| row.iter().map(|&m| m / coeff).collect())
         .collect()
 }
 
-pub fn multiplication(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
-    matrix
-        .iter()
-        .map(|row| row.iter().map(|&m| m * coeff).collect())
-        .collect()
+pub fn matrix_multiply(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    let m = matrix_1.len();
+    let n = matrix_1[0].len();
+    let mut result = vec![vec![0.0; n]; m];
+
+    for i in 0..m {
+        for j in 0..n {
+            result[i][j] = matrix_1[i][j] * matrix_2[i][j];
+        }
+    }
+
+    result
 }
 
 pub fn one_hot(matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> Vec<Vec<f64>> {
@@ -164,12 +191,31 @@ pub fn zeroes(rows: usize, cols: usize) -> Vec<Vec<f64>> {
     vec![vec![0.0; cols]; rows]
 }
 
-fn sum_2d_vector(matrix: &[Vec<f64>]) -> f64 {
-    let mut sum = 0.0;
-    for row in matrix.iter() {
-        for &val in row.iter() {
-            sum += val;
+pub fn row_sum(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    matrix.iter().map(|row| vec![row.iter().sum()]).collect()
+}
+
+pub fn col_sum(matrix: &[Vec<f64>]) -> Vec<f64> {
+    let num_cols = matrix[0].len();
+    let mut result = vec![0.0; num_cols];
+
+    for row in matrix {
+        for (j, value) in row.iter().enumerate() {
+            result[j] += value;
         }
     }
-    sum
+
+    result
+}
+
+pub fn matrix_max(m: &[Vec<f64>]) -> f64 {
+    let mut max_value = m[0][0];
+    for row in m {
+        for &value in row {
+            if value > max_value {
+                max_value = value;
+            }
+        }
+    }
+    max_value
 }

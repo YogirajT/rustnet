@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use rustnet::common::matrix::{dot_product, transpose};
+    use rustnet::common::{
+        matrix::{dot_product, get_nth_column, transpose},
+        network_functions::{get_predictions, softmax},
+    };
 
     #[test]
     fn test_dot_product() {
@@ -31,5 +34,43 @@ mod tests {
         let expected = vec![vec![1, 4, 7], vec![2, 5, 8], vec![3, 6, 9]];
         let result = transpose(&matrix);
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_get_nth_column() {
+        let x = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let result = get_nth_column(&x, 0);
+        assert_eq!(result, vec![1.0, 4.0]);
+    }
+
+    #[test]
+    fn test_softmax() {
+        let x = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let result = softmax(&x);
+        assert_eq!(
+            result,
+            vec![
+                vec![
+                    0.047425873177566774,
+                    0.047425873177566774,
+                    0.04742587317756679
+                ],
+                vec![0.9525741268224331, 0.9525741268224333, 0.9525741268224334]
+            ]
+        );
+    }
+
+    #[test]
+    fn test_get_predictions() {
+        let x = vec![vec![1.0, 7.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let result = get_predictions(&x);
+        assert_eq!(result, vec![1, 0, 1]);
+
+        let matrix = vec![
+            vec![1.0, 5.0, 3.0],
+            vec![4.0, 6.0, 2.0],
+            vec![7.0, 2.0, 9.0],
+        ];
+        assert_eq!(get_predictions(&matrix), vec![2, 1, 2]);
     }
 }
