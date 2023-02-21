@@ -82,18 +82,18 @@ pub fn transform_labels_to_network_output(labels: &[Vec<f64>]) -> Vec<Vec<f64>> 
 }
 
 pub fn get_predictions(matrix: &[Vec<f64>]) -> Vec<usize> {
-    let ncol = matrix[0].len();
+    let ncol = matrix.first().unwrap().len();
     let mut result = vec![0; ncol];
-    for col in 0..ncol {
+    for (i, _) in matrix.first().unwrap().iter().enumerate() {
         let mut max_index = 0;
-        let mut max_value = matrix[0][col];
-        for row in 1..matrix.len() {
-            if matrix[row][col] > max_value {
-                max_index = row;
-                max_value = matrix[row][col];
+        let mut max_value = matrix[0][i];
+        for (j, _) in matrix.iter().enumerate().skip(1) {
+            if matrix[j][i] > max_value {
+                max_index = j;
+                max_value = matrix[j][i];
             }
         }
-        result[col] = max_index;
+        result[i] = max_index;
     }
     result
 }
