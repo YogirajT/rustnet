@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use rustnet::common::{
-        matrix::{dot_product, get_nth_column, transpose},
+        matrix::{dot_product, get_nth_column, linear_op, transpose, Operation},
         network_functions::{get_predictions, softmax},
     };
 
@@ -72,5 +72,14 @@ mod tests {
             vec![7.0, 2.0, 9.0],
         ];
         assert_eq!(get_predictions(&matrix), vec![2, 1, 2]);
+    }
+
+    #[test]
+    fn test_linear_op() {
+        let x = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let b = vec![vec![1.0], vec![2.0]];
+        let result = linear_op(Operation::Add, &x, &b);
+
+        assert_eq!(result, vec![vec![2.0, 3.0, 4.0], vec![6.0, 7.0, 8.0]]);
     }
 }

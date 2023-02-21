@@ -124,7 +124,7 @@ pub fn forward_propagation(
 
     let weighted_l1 = dot_product(&w_2, &activation_1);
 
-    let z_2 = weighted_l1;
+    let z_2 = linear_op(Add, &weighted_l1, &_b_2);
 
     let activation_2 = softmax(&z_2);
 
@@ -139,7 +139,7 @@ pub fn back_propagation(
 ) -> NetworkParams {
     let (z_1, activation_1, _z_2, activation_2) = network_params;
 
-    let m_inverse = 1.0 / (labels[0].len() as f64);
+    let m_inverse = 1.0 / (labels.first().unwrap().len() as f64);
 
     let expected_labels = transform_labels_to_network_output(&labels);
 

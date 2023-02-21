@@ -32,6 +32,9 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
 
     let (_dev_labels, _dev_data) = split_matrix(&transposed_dev_matrix, 1);
 
+    // draw(&get_nth_column(&_dev_data, 0));
+    // println!("\n Number: {:?}", &_dev_labels[0][0]);
+
     let (mut w_1, mut b_1, mut w_2, mut b_2) = get_network_params();
 
     let normalized_input = divide(&_dev_data, 255.0);
