@@ -20,15 +20,11 @@ use std::io;
 fn init(alpha: f64, rounds: usize) -> NetworkParams {
     let reader = Reader::from_reader(io::stdin());
 
-    let mut matrix = create_vec_from_csv(reader);
+    let mut dev_set = create_vec_from_csv(reader);
 
-    shuffle_matrix(&mut matrix);
-
-    let (dev_set, test_set) = split_matrix(&matrix, 5000);
+    shuffle_matrix(&mut dev_set);
 
     let transposed_dev_matrix = transpose(&dev_set);
-
-    let _transposed_test_set = transpose(&test_set);
 
     let (_dev_labels, _dev_data) = split_matrix(&transposed_dev_matrix, 1);
 
@@ -58,7 +54,7 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
         b_2 = linear_op(Subtract, &b_2, &multiply(&delta_b_2, alpha));
 
         if (i + 1) % (rounds / 10) == 0 {
-            println!("Iteration: {i}");
+            println!("Iteration: {}", i + 1);
             let prediction = get_predictions(&forward_prop.3.clone());
             println!(
                 "Accuracy: {}",
@@ -71,5 +67,5 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
 }
 
 fn main() {
-    let _params = init(0.10, 100);
+    let _params = init(0.15, 200);
 }

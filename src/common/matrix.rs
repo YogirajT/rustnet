@@ -91,7 +91,7 @@ where
 }
 
 pub fn rand_matrix(rows: usize, columns: usize) -> Vec<Vec<f64>> {
-    let mut rng = Pcg64::seed_from_u64(0);
+    let mut rng = Pcg64::from_entropy();
     let mut result = Vec::new();
 
     for _ in 0..rows {
@@ -143,7 +143,7 @@ pub fn multiply(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
 
     for (i, row) in matrix.iter().enumerate() {
         for (j, cell) in row.iter().enumerate() {
-            result[i][j] = *cell - coeff;
+            result[i][j] = *cell * coeff;
         }
     }
 
@@ -171,20 +171,18 @@ pub fn matrix_multiply(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<
     result
 }
 
-pub fn one_hot(matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> Vec<Vec<f64>> {
-    let bias_first_col = match bias {
-        [x] => x,
-        _ => panic!("expected single element"),
-    };
-    matrix
-        .iter()
-        .map(|row| {
-            row.iter()
-                .zip(bias_first_col.iter())
-                .map(|(&m, &v)| m + v)
-                .collect()
-        })
-        .collect()
+pub fn matrix_subtract(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    let m = matrix_1.len();
+    let n = matrix_1[0].len();
+    let mut result = vec![vec![0.0; n]; m];
+
+    for i in 0..m {
+        for j in 0..n {
+            result[i][j] = matrix_1[i][j] - matrix_2[i][j];
+        }
+    }
+
+    result
 }
 
 pub fn zeroes(rows: usize, cols: usize) -> Vec<Vec<f64>> {

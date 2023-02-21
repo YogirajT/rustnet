@@ -1,8 +1,11 @@
 #[cfg(test)]
 mod tests {
     use rustnet::common::{
-        matrix::{dot_product, get_nth_column, linear_op, transpose, Operation},
-        network_functions::{get_predictions, softmax},
+        matrix::{
+            dot_product, get_nth_column, linear_op, matrix_multiply, matrix_subtract, row_sum,
+            transpose, Operation,
+        },
+        network_functions::{get_predictions, softmax, transform_labels_to_network_output},
     };
 
     #[test]
@@ -81,5 +84,46 @@ mod tests {
         let result = linear_op(Operation::Add, &x, &b);
 
         assert_eq!(result, vec![vec![2.0, 3.0, 4.0], vec![6.0, 7.0, 8.0]]);
+    }
+
+    #[test]
+    fn test_matrix_subtract() {
+        let x = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let y = vec![vec![0.1, 0.2, 0.3], vec![0.4, 0.5, 0.6]];
+        let result = matrix_subtract(&x, &y);
+
+        assert_eq!(result, vec![vec![0.9, 1.8, 2.7], vec![3.6, 4.5, 5.4]]);
+    }
+
+    #[test]
+    fn test_transform_labels_to_network_output() {
+        let x = vec![vec![1.0, 2.0, 3.0]];
+        let result = transform_labels_to_network_output(&x);
+
+        assert_eq!(
+            result,
+            vec![
+                vec![0.0, 0.0, 0.0],
+                vec![1.0, 0.0, 0.0],
+                vec![0.0, 1.0, 0.0],
+                vec![0.0, 0.0, 1.0]
+            ]
+        );
+    }
+
+    #[test]
+    fn test_row_sum() {
+        let x = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let result = row_sum(&x);
+
+        assert_eq!(result, vec![vec![6.0], vec![15.0]]);
+    }
+
+    #[test]
+    fn test_matrix_multiply() {
+        let x = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let result = matrix_multiply(&x, &x);
+
+        assert_eq!(result, vec![vec![1.0, 4.0, 9.0], vec![16.0, 25.0, 36.0]]);
     }
 }

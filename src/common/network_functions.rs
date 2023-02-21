@@ -1,9 +1,8 @@
 #![allow(dead_code)]
-use super::matrix::Operation::{Add, Subtract};
-
+use super::matrix::Operation::Add;
 use super::matrix::{col_sum, matrix_max, matrix_multiply, multiply, row_sum};
 use super::{
-    matrix::{dot_product, linear_op, transpose, zeroes},
+    matrix::{dot_product, linear_op, matrix_subtract, transpose, zeroes},
     types::NetworkParams,
 };
 
@@ -26,8 +25,8 @@ fn relu_derivative(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let column_count = input.first().unwrap().len();
     let mut output = vec![vec![0.0; column_count]; row_count];
 
-    for (i, row) in input.iter().enumerate().take(row_count) {
-        for (j, cell) in row.iter().enumerate().take(column_count) {
+    for (i, row) in input.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate() {
             output[i][j] = if *cell > 0.0 { 1.0 } else { 0.0 }
         }
     }
@@ -133,7 +132,7 @@ pub fn forward_propagation(
 
 pub fn back_propagation(
     network_params: NetworkParams,
-    _w_2: Vec<Vec<f64>>,
+    w_2: Vec<Vec<f64>>,
     labels: Vec<Vec<f64>>,
     input_image: &[Vec<f64>],
 ) -> NetworkParams {
@@ -143,7 +142,7 @@ pub fn back_propagation(
 
     let expected_labels = transform_labels_to_network_output(&labels);
 
-    let delta_z_2 = linear_op(Subtract, &activation_2, &expected_labels);
+    let delta_z_2 = matrix_subtract(&activation_2, &expected_labels);
 
     let transposed_a_1 = transpose(&activation_1);
 
@@ -153,7 +152,7 @@ pub fn back_propagation(
 
     let delta_b_2 = multiply(&sum_delta_z_2, m_inverse);
 
-    let dot_w_2_d_z_2 = dot_product(&transpose(&_w_2), &delta_z_2);
+    let dot_w_2_d_z_2 = dot_product(&transpose(&w_2), &delta_z_2);
 
     let deriv_z_1 = relu_derivative(&z_1);
 
