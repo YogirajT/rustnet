@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+use crate::common::matrix::{matrix_avg, matrix_min};
+
 use super::matrix::Operation::Add;
 use super::matrix::{col_sum, matrix_max, matrix_multiply, multiply, row_sum};
 use super::{
@@ -113,7 +115,7 @@ pub fn forward_propagation(
     network_params: NetworkParams,
     input_image: &[Vec<f64>],
 ) -> NetworkParams {
-    let (w_1, b_1, w_2, _b_2) = network_params;
+    let (w_1, b_1, w_2, b_2) = network_params;
 
     let weighted_input = dot_product(&w_1, input_image);
 
@@ -123,7 +125,7 @@ pub fn forward_propagation(
 
     let weighted_l1 = dot_product(&w_2, &activation_1);
 
-    let z_2 = linear_op(Add, &weighted_l1, &_b_2);
+    let z_2 = linear_op(Add, &weighted_l1, &b_2);
 
     let activation_2 = softmax(&z_2);
 
@@ -161,6 +163,11 @@ pub fn back_propagation(
     let delta_w_1 = multiply(&dot_product(&delta_z_1, &transpose(input_image)), m_inverse);
 
     let delta_b_1 = multiply(&row_sum(&delta_z_1), m_inverse);
+
+    let _deriv_z_1_avg = matrix_avg(&deriv_z_1);
+    let _deriv_z_1_min = matrix_min(&deriv_z_1);
+    let _deriv_z_1_max = matrix_max(&deriv_z_1);
+    println!("deriv_z_1 avg: {_deriv_z_1_avg}, min: {_deriv_z_1_min}, max: {_deriv_z_1_max}");
 
     (delta_w_1, delta_b_1, delta_w_2, delta_b_2)
 }

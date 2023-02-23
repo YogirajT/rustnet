@@ -25,7 +25,7 @@ pub fn dot_product(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>
     for (i, own_row) in matrix_1.iter().enumerate().take(m1_rows) {
         for (j, _other_col) in matrix_2.iter().enumerate().take(m2_cols) {
             for (k, cell) in own_row.iter().enumerate().take(m1_cols) {
-                result[i][j] += cell * matrix_2[k][j];
+                result[i][j] += *cell * matrix_2[k][j];
             }
         }
     }
@@ -173,7 +173,7 @@ pub fn matrix_multiply(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<
 
 pub fn matrix_subtract(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let m = matrix_1.len();
-    let n = matrix_1[0].len();
+    let n = matrix_1.first().unwrap().len();
     let mut result = vec![vec![0.0; n]; m];
 
     for i in 0..m {
@@ -194,7 +194,7 @@ pub fn row_sum(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
 }
 
 pub fn col_sum(matrix: &[Vec<f64>]) -> Vec<f64> {
-    let num_cols = matrix[0].len();
+    let num_cols = matrix.first().unwrap().len();
     let mut result = vec![0.0; num_cols];
 
     for row in matrix {
@@ -216,4 +216,29 @@ pub fn matrix_max(m: &[Vec<f64>]) -> f64 {
         }
     }
     max_value
+}
+
+pub fn matrix_min(m: &[Vec<f64>]) -> f64 {
+    let mut min_value = m[0][0];
+    for row in m {
+        for &value in row {
+            if value < min_value {
+                min_value = value;
+            }
+        }
+    }
+    min_value
+}
+
+pub fn matrix_avg(m: &[Vec<f64>]) -> f64 {
+    let num_rows = m.len();
+    let num_cols = m.first().unwrap().len();
+
+    let mut total = m[0][0];
+    for row in m {
+        for &value in row {
+            total += value
+        }
+    }
+    total / (num_rows * num_cols) as f64
 }

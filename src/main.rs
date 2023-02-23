@@ -4,12 +4,11 @@ use csv::Reader;
 use rustnet::common::matrix::create_vec_from_csv;
 use rustnet::common::matrix::divide;
 use rustnet::common::matrix::get_network_params;
-use rustnet::common::matrix::linear_op;
+use rustnet::common::matrix::matrix_subtract;
 use rustnet::common::matrix::multiply;
 use rustnet::common::matrix::shuffle_matrix;
 use rustnet::common::matrix::split_matrix;
 use rustnet::common::matrix::transpose;
-use rustnet::common::matrix::Operation::Subtract;
 use rustnet::common::network_functions::back_propagation;
 use rustnet::common::network_functions::forward_propagation;
 use rustnet::common::network_functions::get_accuracy;
@@ -48,10 +47,10 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
             &normalized_input.clone(),
         );
 
-        w_1 = linear_op(Subtract, &w_1, &multiply(&delta_w_1, alpha));
-        b_1 = linear_op(Subtract, &b_1, &multiply(&delta_b_1, alpha));
-        w_2 = linear_op(Subtract, &w_2, &multiply(&delta_w_2, alpha));
-        b_2 = linear_op(Subtract, &b_2, &multiply(&delta_b_2, alpha));
+        w_1 = matrix_subtract(&w_1, &multiply(&delta_w_1, alpha));
+        b_1 = matrix_subtract(&b_1, &multiply(&delta_b_1, alpha));
+        w_2 = matrix_subtract(&w_2, &multiply(&delta_w_2, alpha));
+        b_2 = matrix_subtract(&b_2, &multiply(&delta_b_2, alpha));
 
         if (i + 1) % (rounds / 10) == 0 {
             println!("Iteration: {}", i + 1);
@@ -67,5 +66,5 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
 }
 
 fn main() {
-    let _params = init(0.15, 200);
+    let _params = init(1.0, 10);
 }
