@@ -1,5 +1,6 @@
 mod common;
 
+use common::matrix::split_matrix;
 use csv::Reader;
 use rustnet::common::matrix::create_vec_from_csv;
 use rustnet::common::matrix::divide;
@@ -7,7 +8,6 @@ use rustnet::common::matrix::get_network_params;
 use rustnet::common::matrix::matrix_subtract;
 use rustnet::common::matrix::multiply;
 use rustnet::common::matrix::shuffle_matrix;
-use rustnet::common::matrix::split_matrix;
 use rustnet::common::matrix::transpose;
 use rustnet::common::network_functions::back_propagation;
 use rustnet::common::network_functions::forward_propagation;
@@ -23,16 +23,20 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
 
     shuffle_matrix(&mut dev_set);
 
-    let transposed_dev_matrix = transpose(&dev_set);
+    let (slice1, _) = split_matrix(&dev_set, 100);
 
-    let (_dev_labels, _dev_data) = split_matrix(&transposed_dev_matrix, 1);
+    let transposed_dev_matrix = transpose(&slice1);
+
+    let (_dev_labels, dev_data) = split_matrix(&transposed_dev_matrix, 1);
 
     // draw(&get_nth_column(&_dev_data, 0));
     // println!("\n Number: {:?}", &_dev_labels[0][0]);
 
     let (mut w_1, mut b_1, mut w_2, mut b_2) = get_network_params();
 
-    let normalized_input = divide(&_dev_data, 255.0);
+    println!("w_1 {w_1:?}");
+
+    let normalized_input = divide(&dev_data, 255.0);
 
     for i in 0..rounds {
         let forward_prop = forward_propagation(
@@ -66,5 +70,5 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
 }
 
 fn main() {
-    let _params = init(1.0, 10);
+    let _params = init(0.10, 10);
 }

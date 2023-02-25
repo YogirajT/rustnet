@@ -2,10 +2,10 @@
 mod tests {
     use rustnet::common::{
         matrix::{
-            dot_product, get_nth_column, linear_op, matrix_multiply, matrix_subtract, row_sum,
-            transpose, Operation,
+            dot_product, get_nth_column, linear_op, matrix_avg, matrix_multiply, matrix_subtract,
+            row_sum, transpose, Operation,
         },
-        network_functions::{get_predictions, softmax, transform_labels_to_network_output},
+        network_functions::{get_predictions, relu, softmax, transform_labels_to_network_output},
     };
 
     #[test]
@@ -14,6 +14,13 @@ mod tests {
         let matrix2 = vec![vec![7.0, 8.0], vec![9.0, 10.0], vec![11.0, 12.0]];
         let expected = vec![vec![58.0, 64.0], vec![139.0, 154.0]];
         assert_eq!(dot_product(&matrix1, &matrix2), expected);
+
+        let matrix3 = vec![vec![1.0, 2.0], vec![-0.1, 0.2]];
+        let matrix4 = vec![vec![1.0, 2.0], vec![3.0, 4.0]];
+        assert_eq!(
+            dot_product(&matrix3, &matrix4),
+            vec![vec![7., 10.], vec![0.5000000000000001, 0.6000000000000001]]
+        );
     }
 
     #[test]
@@ -33,8 +40,16 @@ mod tests {
 
     #[test]
     fn test_transpose() {
-        let matrix = vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]];
-        let expected = vec![vec![1, 4, 7], vec![2, 5, 8], vec![3, 6, 9]];
+        let matrix = vec![
+            vec![1.0, 2.0, 3.0],
+            vec![4.0, 5.0, 6.0],
+            vec![7.0, 8.0, 9.0],
+        ];
+        let expected = vec![
+            vec![1.0, 4.0, 7.0],
+            vec![2.0, 5.0, 8.0],
+            vec![3.0, 6.0, 9.0],
+        ];
         let result = transpose(&matrix);
         assert_eq!(result, expected);
     }
@@ -59,6 +74,29 @@ mod tests {
                     0.04742587317756679
                 ],
                 vec![0.9525741268224331, 0.9525741268224333, 0.9525741268224334]
+            ]
+        );
+
+        let y = vec![
+            vec![-5.0, -9.0, -1.0],
+            vec![-0.5, -0.1, -0.9],
+            vec![1.0, 5.0, 9.0],
+        ];
+
+        assert_eq!(
+            softmax(&y),
+            vec![
+                vec![
+                    0.0020224658549226203,
+                    8.26489137046391e-7,
+                    4.539559109648753e-5
+                ],
+                vec![
+                    0.18205657441339163,
+                    0.006059796483224012,
+                    5.016988708869179e-5
+                ],
+                vec![0.8159209597316858, 0.993939377027639, 0.9999044345218148]
             ]
         );
     }
@@ -125,5 +163,38 @@ mod tests {
         let result = matrix_multiply(&x, &x);
 
         assert_eq!(result, vec![vec![1.0, 4.0, 9.0], vec![16.0, 25.0, 36.0]]);
+    }
+
+    #[test]
+    fn test_relu() {
+        let x = vec![
+            vec![-1.0, -2.0, -3.0],
+            vec![-0.1, -0.2, -0.3],
+            vec![1.0, 2.0, 3.0],
+            vec![0.1, 0.2, 0.3],
+        ];
+        let result = relu(&x);
+
+        assert_eq!(
+            result,
+            vec![
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![1.0, 2.0, 3.0],
+                vec![0.1, 0.2, 0.3]
+            ]
+        );
+    }
+
+    #[test]
+    fn test_matrix_avg() {
+        let x = vec![
+            vec![5.0, 9.0, 13.0],
+            vec![14.0, 10.0, 12.0],
+            vec![11.0, 15.0, 19.0],
+        ];
+        let result = matrix_avg(&x);
+
+        assert_eq!(result, 12.0);
     }
 }

@@ -34,7 +34,7 @@ pub fn dot_product(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>
 }
 
 pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f64>> {
-    let mut vec = vec![];
+    let mut vec = Vec::new();
     for result in rdr.records() {
         let record = result.unwrap();
 
@@ -48,19 +48,18 @@ pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f64>> {
     vec
 }
 
-pub fn transpose<T: Clone>(matrix: &[Vec<T>]) -> Vec<Vec<T>> {
-    let row_count = matrix.len();
-    let column_count = matrix[0].len();
+pub fn transpose(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    let rows = matrix.len();
+    let cols = matrix[0].len();
+    let mut result = vec![vec![0.0; rows]; cols];
 
-    let mut transposed = vec![vec![matrix[0][0].clone(); row_count]; column_count];
-
-    for (i, row) in matrix.iter().enumerate().take(row_count) {
-        for (j, cell) in row.iter().enumerate().take(column_count) {
-            transposed[j][i] = cell.clone();
+    for i in 0..rows {
+        for j in 0..cols {
+            result[j][i] = matrix[i][j];
         }
     }
 
-    transposed
+    result
 }
 
 pub fn shuffle_matrix<T>(matrix: &mut [Vec<T>]) {
@@ -234,7 +233,7 @@ pub fn matrix_avg(m: &[Vec<f64>]) -> f64 {
     let num_rows = m.len();
     let num_cols = m.first().unwrap().len();
 
-    let mut total = m[0][0];
+    let mut total = 0.0;
     for row in m {
         for &value in row {
             total += value

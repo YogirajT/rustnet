@@ -8,14 +8,14 @@ use super::{
     types::NetworkParams,
 };
 
-fn relu(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn relu(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let row_count = input.len();
     let column_count = input.first().unwrap().len();
     let mut output = vec![vec![0.0; column_count]; row_count];
 
-    for (i, row) in input.iter().enumerate().take(row_count) {
-        for (j, cell) in row.iter().enumerate().take(column_count) {
-            output[i][j] = if *cell > 0.0 { *cell } else { 0.0 }
+    for (i, row) in input.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate() {
+            output[i][j] = if cell > &0.0 { *cell } else { 0.0 }
         }
     }
 
@@ -79,7 +79,7 @@ pub fn transform_labels_to_network_output(labels: &[Vec<f64>]) -> Vec<Vec<f64>> 
         zeroes_matrix[i][label] = 1.0;
     }
 
-    transpose::<f64>(&zeroes_matrix)
+    transpose(&zeroes_matrix)
 }
 
 pub fn get_predictions(matrix: &[Vec<f64>]) -> Vec<usize> {
@@ -129,6 +129,12 @@ pub fn forward_propagation(
 
     let activation_2 = softmax(&z_2);
 
+    let _activation_2_avg = matrix_avg(&activation_2);
+    let _activation_2_min = matrix_min(&activation_2);
+    let _activation_2_max = matrix_max(&activation_2);
+    let shape = (activation_2.len(), activation_2.first().unwrap().len());
+    println!("activation_2 avg: {_activation_2_avg}, min: {_activation_2_min}, max: {_activation_2_max}, shape: {shape:?}");
+
     (z_1, activation_1, z_2, activation_2)
 }
 
@@ -163,11 +169,6 @@ pub fn back_propagation(
     let delta_w_1 = multiply(&dot_product(&delta_z_1, &transpose(input_image)), m_inverse);
 
     let delta_b_1 = multiply(&row_sum(&delta_z_1), m_inverse);
-
-    let _deriv_z_1_avg = matrix_avg(&deriv_z_1);
-    let _deriv_z_1_min = matrix_min(&deriv_z_1);
-    let _deriv_z_1_max = matrix_max(&deriv_z_1);
-    println!("deriv_z_1 avg: {_deriv_z_1_avg}, min: {_deriv_z_1_min}, max: {_deriv_z_1_max}");
 
     (delta_w_1, delta_b_1, delta_w_2, delta_b_2)
 }
