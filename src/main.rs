@@ -14,6 +14,7 @@ use rustnet::common::network_functions::forward_propagation;
 use rustnet::common::network_functions::get_accuracy;
 use rustnet::common::network_functions::get_predictions;
 use rustnet::common::types::NetworkParams;
+use rustnet::save_to_file;
 use std::io;
 
 fn init(alpha: f64, rounds: usize) -> NetworkParams {
@@ -23,22 +24,15 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
 
     shuffle_matrix(&mut dev_set);
 
-    let (slice1, _) = split_matrix(&dev_set, 100);
-
-    let transposed_dev_matrix = transpose(&slice1);
+    let transposed_dev_matrix = transpose(&dev_set);
 
     let (_dev_labels, dev_data) = split_matrix(&transposed_dev_matrix, 1);
 
-    // draw(&get_nth_column(&_dev_data, 0));
-    // println!("\n Number: {:?}", &_dev_labels[0][0]);
-
     let (mut w_1, mut b_1, mut w_2, mut b_2) = get_network_params();
-
-    println!("w_1 {w_1:?}");
 
     let normalized_input = divide(&dev_data, 255.0);
 
-    for i in 0..rounds {
+    for _i in 0..rounds {
         let forward_prop = forward_propagation(
             (w_1.clone(), b_1.clone(), w_2.clone(), b_2.clone()),
             &normalized_input.clone(),
@@ -56,19 +50,25 @@ fn init(alpha: f64, rounds: usize) -> NetworkParams {
         w_2 = matrix_subtract(&w_2, &multiply(&delta_w_2, alpha));
         b_2 = matrix_subtract(&b_2, &multiply(&delta_b_2, alpha));
 
-        if (i + 1) % (rounds / 10) == 0 {
-            println!("Iteration: {}", i + 1);
-            let prediction = get_predictions(&forward_prop.3.clone());
-            println!(
-                "Accuracy: {}",
-                get_accuracy(&_dev_labels.clone(), prediction)
-            )
-        }
+        let prediction = get_predictions(&forward_prop.3.clone());
+        println!(
+            "Accuracy: {}",
+            get_accuracy(&_dev_labels.clone(), prediction)
+        )
     }
 
     (w_1, b_1, w_2, b_2)
 }
 
 fn main() {
-    let _params = init(0.10, 10);
+    let (w_1, b_1, w_2, b_2) = init(0.10, 1);
+
+    save_to_file!(w_1);
+    save_to_file!(b_1);
+    save_to_file!(w_2);
+    save_to_file!(b_2);
+
+
+    // draw(&get_nth_column(&_dev_data, 0));
+    // println!("\n Number: {:?}", &_dev_labels[0][0]);
 }

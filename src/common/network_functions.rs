@@ -1,6 +1,4 @@
 #![allow(dead_code)]
-use crate::common::matrix::{matrix_avg, matrix_min};
-
 use super::matrix::Operation::Add;
 use super::matrix::{col_sum, matrix_max, matrix_multiply, multiply, row_sum};
 use super::{
@@ -37,7 +35,8 @@ fn relu_derivative(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
 }
 
 pub fn softmax(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
-    let mut softmax_output: Vec<Vec<f64>> = vec![vec![0.0; matrix[0].len()]; matrix.len()];
+    let mut softmax_output: Vec<Vec<f64>> =
+        vec![vec![0.0; matrix.first().unwrap().len()]; matrix.len()];
 
     let max = matrix_max(matrix);
 
@@ -67,16 +66,12 @@ pub fn transform_labels_to_network_output(labels: &[Vec<f64>]) -> Vec<Vec<f64>> 
         _ => panic!("expected single element"),
     };
 
-    let usize_col: Vec<usize> = labels_first_col.iter().map(|x| *x as usize).collect();
     let rows_len = labels_first_col.len();
-    let cols_len = usize_col.iter().max().unwrap();
 
-    let mut zeroes_matrix = zeroes(rows_len, *cols_len + 1);
+    let mut zeroes_matrix = zeroes(rows_len, 10);
 
-    for i in 0..rows_len {
-        let label = usize_col[i];
-
-        zeroes_matrix[i][label] = 1.0;
+    for (i, label) in labels_first_col.iter().enumerate() {
+        zeroes_matrix[i][*label as usize] = 1.0;
     }
 
     transpose(&zeroes_matrix)
@@ -87,7 +82,7 @@ pub fn get_predictions(matrix: &[Vec<f64>]) -> Vec<usize> {
     let mut result = vec![0; ncol];
     for (i, _) in matrix.first().unwrap().iter().enumerate() {
         let mut max_index = 0;
-        let mut max_value = matrix[0][i];
+        let mut max_value = matrix.first().unwrap()[i];
         for (j, _) in matrix.iter().enumerate().skip(1) {
             if matrix[j][i] > max_value {
                 max_index = j;
@@ -128,12 +123,6 @@ pub fn forward_propagation(
     let z_2 = linear_op(Add, &weighted_l1, &b_2);
 
     let activation_2 = softmax(&z_2);
-
-    let _activation_2_avg = matrix_avg(&activation_2);
-    let _activation_2_min = matrix_min(&activation_2);
-    let _activation_2_max = matrix_max(&activation_2);
-    let shape = (activation_2.len(), activation_2.first().unwrap().len());
-    println!("activation_2 avg: {_activation_2_avg}, min: {_activation_2_min}, max: {_activation_2_max}, shape: {shape:?}");
 
     (z_1, activation_1, z_2, activation_2)
 }

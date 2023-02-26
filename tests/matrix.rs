@@ -1,11 +1,18 @@
 #[cfg(test)]
 mod tests {
     use rustnet::common::{
-        matrix::{
-            dot_product, get_nth_column, linear_op, matrix_avg, matrix_multiply, matrix_subtract,
-            row_sum, transpose, Operation,
+        integration_test_vars::{
+            get_b_1_test, get_b_2_test, get_image_label_test, get_image_test, get_w_1_test,
+            get_w_2_test,
         },
-        network_functions::{get_predictions, relu, softmax, transform_labels_to_network_output},
+        matrix::{
+            dot_product, get_nth_column, linear_op, matrix_avg, matrix_max, matrix_min,
+            matrix_multiply, matrix_subtract, row_sum, transpose, Operation,
+        },
+        network_functions::{
+            back_propagation, forward_propagation, get_predictions, relu, softmax,
+            transform_labels_to_network_output,
+        },
     };
 
     #[test]
@@ -52,6 +59,14 @@ mod tests {
         ];
         let result = transpose(&matrix);
         assert_eq!(result, expected);
+
+        let matrix2 = vec![vec![1.0, 2.0, 3.0]];
+        let expected2 = vec![vec![1.0], vec![2.0], vec![3.0]];
+        let result2 = transpose(&matrix2);
+        assert_eq!(result2, expected2);
+
+        let result3 = transpose(&expected2);
+        assert_eq!(result3, matrix2);
     }
 
     #[test]
@@ -144,7 +159,13 @@ mod tests {
                 vec![0.0, 0.0, 0.0],
                 vec![1.0, 0.0, 0.0],
                 vec![0.0, 1.0, 0.0],
-                vec![0.0, 0.0, 1.0]
+                vec![0.0, 0.0, 1.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
             ]
         );
     }
@@ -196,5 +217,86 @@ mod tests {
         let result = matrix_avg(&x);
 
         assert_eq!(result, 12.0);
+    }
+
+    #[test]
+    fn test_forward_prop() {
+        let (_z_1, _activation_1, _z_2, activation_2) = forward_propagation(
+            (
+                get_w_1_test(),
+                get_b_1_test(),
+                get_w_2_test(),
+                get_b_2_test(),
+            ),
+            &get_image_test(),
+        );
+
+        let _activation_2_avg = matrix_avg(&activation_2);
+        let _activation_2_min = matrix_min(&activation_2);
+        let _activation_2_max = matrix_max(&activation_2);
+
+        assert_eq!(_activation_2_avg, 0.1);
+        assert_eq!(_activation_2_min, 0.003239960256952375);
+        assert_eq!(_activation_2_max, 0.5372429833450435);
+    }
+
+    #[test]
+    fn test_back_prop() {
+        let (_z_1, _activation_1, _z_2, activation_2) = forward_propagation(
+            (
+                get_w_1_test(),
+                get_b_1_test(),
+                get_w_2_test(),
+                get_b_2_test(),
+            ),
+            &get_image_test(),
+        );
+
+        let _activation_2_avg = matrix_avg(&activation_2);
+        let _activation_2_min = matrix_min(&activation_2);
+        let _activation_2_max = matrix_max(&activation_2);
+
+        assert_eq!(_activation_2_avg, 0.1);
+        assert_eq!(_activation_2_min, 0.003239960256952375);
+        assert_eq!(_activation_2_max, 0.5372429833450435);
+
+        let (delta_w_1, delta_b_1, delta_w_2, delta_b_2) = back_propagation(
+            (_z_1, _activation_1, _z_2, activation_2),
+            get_w_2_test(),
+            get_image_label_test(),
+            &get_image_test(),
+        );
+
+        let _delta_w_2_avg = matrix_avg(&delta_w_2);
+        let _delta_w_2_min = matrix_min(&delta_w_2);
+        let _delta_w_2_max = matrix_max(&delta_w_2);
+
+        assert_eq!(_delta_w_2_avg, -4.440892098500626E-18);
+        assert_eq!(_delta_w_2_min, -4.479972137763798);
+        assert_eq!(_delta_w_2_max, 2.558414291745961);
+
+        let _delta_w_1_avg = matrix_avg(&delta_w_1);
+        let _delta_w_1_min = matrix_min(&delta_w_1);
+        let _delta_w_1_max = matrix_max(&delta_w_1);
+
+        assert_eq!(_delta_w_1_avg, 0.009383504534215189);
+        assert_eq!(_delta_w_1_min, -0.39199314867093915);
+        assert_eq!(_delta_w_1_max, 0.5273504829479152);
+
+        let _delta_b_1_avg = matrix_avg(&delta_b_1);
+        let _delta_b_1_min = matrix_min(&delta_b_1);
+        let _delta_b_1_max = matrix_max(&delta_b_1);
+
+        assert_eq!(_delta_b_1_avg, 0.07719006815949933);
+        assert_eq!(_delta_b_1_min, -0.39199314867093915);
+        assert_eq!(_delta_b_1_max, 0.5273504829479152);
+
+        let _delta_b_2_avg = matrix_avg(&delta_b_2);
+        let _delta_b_2_min = matrix_min(&delta_b_2);
+        let _delta_b_2_max = matrix_max(&delta_b_2);
+
+        assert_eq!(_delta_b_2_avg, 0.0);
+        assert_eq!(_delta_b_2_min, -0.9407520917780592);
+        assert_eq!(_delta_b_2_max, 0.5372429833450435);
     }
 }

@@ -13,20 +13,23 @@ pub enum Operation {
 
 pub fn dot_product(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let m1_rows = matrix_1.len();
-    let m1_cols = matrix_1[0].len();
+    let m1_cols = matrix_1.first().unwrap().len();
     let m2_rows = matrix_2.len();
-    let m2_cols = matrix_2[0].len();
+    let m2_cols = matrix_2.first().unwrap().len();
 
     if m1_cols != m2_rows {
         panic!("The number of columns in the first matrix must be equal to the number of rows in the second matrix!");
     }
+
     let mut result = vec![vec![0.0; m2_cols]; m1_rows];
 
-    for (i, own_row) in matrix_1.iter().enumerate().take(m1_rows) {
-        for (j, _other_col) in matrix_2.iter().enumerate().take(m2_cols) {
-            for (k, cell) in own_row.iter().enumerate().take(m1_cols) {
-                result[i][j] += *cell * matrix_2[k][j];
+    for i in 0..m1_rows {
+        for j in 0..m2_cols {
+            let mut sum = 0.0;
+            for (k, _) in matrix_2.iter().enumerate().take(m1_cols) {
+                sum += matrix_1[i][k] * matrix_2[k][j];
             }
+            result[i][j] = sum;
         }
     }
 
@@ -50,12 +53,12 @@ pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f64>> {
 
 pub fn transpose(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let rows = matrix.len();
-    let cols = matrix[0].len();
+    let cols = matrix.first().unwrap().len();
     let mut result = vec![vec![0.0; rows]; cols];
 
-    for i in 0..rows {
-        for j in 0..cols {
-            result[j][i] = matrix[i][j];
+    for (i, row) in matrix.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate() {
+            result[j][i] = *cell;
         }
     }
 
@@ -150,15 +153,22 @@ pub fn multiply(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
 }
 
 pub fn divide(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
-    matrix
-        .iter()
-        .map(|row| row.iter().map(|&m| m / coeff).collect())
-        .collect()
+    let m = matrix.len();
+    let n = matrix.first().unwrap().len();
+    let mut result = vec![vec![0.0; n]; m];
+
+    for i in 0..m {
+        for j in 0..n {
+            result[i][j] = matrix[i][j] / coeff;
+        }
+    }
+
+    result
 }
 
 pub fn matrix_multiply(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let m = matrix_1.len();
-    let n = matrix_1[0].len();
+    let n = matrix_1.first().unwrap().len();
     let mut result = vec![vec![0.0; n]; m];
 
     for i in 0..m {
