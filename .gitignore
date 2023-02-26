@@ -7,3 +7,4 @@ rls/
 datasets/
 out
 results/
+.env
