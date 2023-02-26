@@ -1,12 +1,15 @@
 #![allow(dead_code)]
 use super::matrix::Operation::Add;
-use super::matrix::{col_sum, matrix_max, matrix_multiply, multiply, row_sum};
+use super::matrix::{
+    col_sum, divide, get_network_params, matrix_max, matrix_multiply, multiply, row_sum,
+    shuffle_matrix, split_matrix,
+};
 use super::{
     matrix::{dot_product, linear_op, matrix_subtract, transpose, zeroes},
     types::NetworkParams,
 };
 
-pub fn relu(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn relu(input: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let row_count = input.len();
     let column_count = input.first().unwrap().len();
     let mut output = vec![vec![0.0; column_count]; row_count];
@@ -20,7 +23,7 @@ pub fn relu(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
     output
 }
 
-fn relu_derivative(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
+fn relu_derivative(input: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let row_count = input.len();
     let column_count = input.first().unwrap().len();
     let mut output = vec![vec![0.0; column_count]; row_count];
@@ -34,15 +37,15 @@ fn relu_derivative(input: &[Vec<f64>]) -> Vec<Vec<f64>> {
     output
 }
 
-pub fn softmax(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
-    let mut softmax_output: Vec<Vec<f64>> =
+pub fn softmax(matrix: &[Vec<f32>]) -> Vec<Vec<f32>> {
+    let mut softmax_output: Vec<Vec<f32>> =
         vec![vec![0.0; matrix.first().unwrap().len()]; matrix.len()];
 
     let max = matrix_max(matrix);
 
     for i in 0..matrix.len() {
         for j in 0..matrix[i].len() {
-            softmax_output[i][j] = f64::exp(matrix[i][j] - max);
+            softmax_output[i][j] = f32::exp(matrix[i][j] - max);
         }
     }
 
@@ -60,7 +63,7 @@ pub fn softmax(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
         .collect()
 }
 
-pub fn transform_labels_to_network_output(labels: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn transform_labels_to_network_output(labels: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let labels_first_col = match labels {
         [x] => x,
         _ => panic!("expected single element"),
@@ -77,7 +80,7 @@ pub fn transform_labels_to_network_output(labels: &[Vec<f64>]) -> Vec<Vec<f64>> 
     transpose(&zeroes_matrix)
 }
 
-pub fn get_predictions(matrix: &[Vec<f64>]) -> Vec<usize> {
+pub fn get_predictions(matrix: &[Vec<f32>]) -> Vec<usize> {
     let ncol = matrix.first().unwrap().len();
     let mut result = vec![0; ncol];
     for (i, _) in matrix.first().unwrap().iter().enumerate() {
@@ -94,7 +97,7 @@ pub fn get_predictions(matrix: &[Vec<f64>]) -> Vec<usize> {
     result
 }
 
-pub fn get_accuracy(labels: &[Vec<f64>], prediction: Vec<usize>) -> f64 {
+pub fn get_accuracy(labels: &[Vec<f32>], prediction: Vec<usize>) -> f32 {
     let labels_arr = labels.first().unwrap();
     let mut accuracy = 0.0;
     for (i, cell) in labels_arr.iter().enumerate() {
@@ -103,12 +106,12 @@ pub fn get_accuracy(labels: &[Vec<f64>], prediction: Vec<usize>) -> f64 {
         }
     }
 
-    accuracy / labels_arr.len() as f64 * 100.0
+    accuracy / labels_arr.len() as f32 * 100.0
 }
 
 pub fn forward_propagation(
     network_params: NetworkParams,
-    input_image: &[Vec<f64>],
+    input_image: &[Vec<f32>],
 ) -> NetworkParams {
     let (w_1, b_1, w_2, b_2) = network_params;
 
@@ -129,13 +132,13 @@ pub fn forward_propagation(
 
 pub fn back_propagation(
     network_params: NetworkParams,
-    w_2: Vec<Vec<f64>>,
-    labels: Vec<Vec<f64>>,
-    input_image: &[Vec<f64>],
+    w_2: Vec<Vec<f32>>,
+    labels: Vec<Vec<f32>>,
+    input_image: &[Vec<f32>],
 ) -> NetworkParams {
     let (z_1, activation_1, _z_2, activation_2) = network_params;
 
-    let m_inverse = 1.0 / (labels.first().unwrap().len() as f64);
+    let m_inverse = 1.0 / (labels.first().unwrap().len() as f32);
 
     let expected_labels = transform_labels_to_network_output(&labels);
 
@@ -160,4 +163,55 @@ pub fn back_propagation(
     let delta_b_1 = multiply(&row_sum(&delta_z_1), m_inverse);
 
     (delta_w_1, delta_b_1, delta_w_2, delta_b_2)
+}
+
+pub fn train(
+    train_labels: Vec<Vec<f32>>,
+    train_data: Vec<Vec<f32>>,
+    iterations: usize,
+    alpha: f32,
+) -> NetworkParams {
+    let (mut w_1, mut b_1, mut w_2, mut b_2) = get_network_params();
+
+    for i in 0..iterations {
+        let forward_prop = forward_propagation(
+            (w_1.clone(), b_1.clone(), w_2.clone(), b_2.clone()),
+            &train_data.clone(),
+        );
+
+        let (delta_w_1, delta_b_1, delta_w_2, delta_b_2) = back_propagation(
+            forward_prop.clone(),
+            w_2.clone(),
+            train_labels.clone(),
+            &train_data.clone(),
+        );
+
+        w_1 = matrix_subtract(&w_1, &multiply(&delta_w_1, alpha));
+        b_1 = matrix_subtract(&b_1, &multiply(&delta_b_1, alpha));
+        w_2 = matrix_subtract(&w_2, &multiply(&delta_w_2, alpha));
+        b_2 = matrix_subtract(&b_2, &multiply(&delta_b_2, alpha));
+
+        if (i + 1) % (iterations / 10) == 0 {
+            println!("Iteration: {}", i + 1);
+            let prediction = get_predictions(&forward_prop.3.clone());
+            println!(
+                "Accuracy: {}",
+                get_accuracy(&train_labels.clone(), prediction)
+            )
+        }
+    }
+
+    (w_1, b_1, w_2, b_2)
+}
+
+pub fn prepare_data(mut dev_set: Vec<Vec<f32>>) -> (Vec<Vec<f32>>, Vec<Vec<f32>>) {
+    shuffle_matrix(&mut dev_set);
+
+    let transposed_dev_matrix = transpose(&dev_set);
+
+    let (train_labels, dev_data) = split_matrix(&transposed_dev_matrix, 1);
+
+    let train_data = divide(&dev_data, 255.0);
+
+    (train_labels, train_data)
 }

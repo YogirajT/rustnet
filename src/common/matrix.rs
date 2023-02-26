@@ -11,7 +11,7 @@ pub enum Operation {
     Add,
 }
 
-pub fn dot_product(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn dot_product(matrix_1: &[Vec<f32>], matrix_2: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let m1_rows = matrix_1.len();
     let m1_cols = matrix_1.first().unwrap().len();
     let m2_rows = matrix_2.len();
@@ -36,7 +36,7 @@ pub fn dot_product(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>
     result
 }
 
-pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f64>> {
+pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f32>> {
     let mut vec = Vec::new();
     for result in rdr.records() {
         let record = result.unwrap();
@@ -44,14 +44,14 @@ pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f64>> {
         vec.push(
             record
                 .iter()
-                .map(|field| field.parse::<f64>().unwrap())
+                .map(|field| field.parse::<f32>().unwrap())
                 .collect(),
         );
     }
     vec
 }
 
-pub fn transpose(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn transpose(matrix: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let rows = matrix.len();
     let cols = matrix.first().unwrap().len();
     let mut result = vec![vec![0.0; rows]; cols];
@@ -80,7 +80,7 @@ fn shuffle<T, R: Rng>(matrix: &mut [Vec<T>], rng: &mut R) {
     }
 }
 
-pub fn split_matrix(matrix: &[Vec<f64>], n: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
+pub fn split_matrix(matrix: &[Vec<f32>], n: usize) -> (Vec<Vec<f32>>, Vec<Vec<f32>>) {
     let (first_n_rows, last_n_rows) = matrix.split_at(n);
     (first_n_rows.to_vec(), last_n_rows.to_vec())
 }
@@ -92,7 +92,7 @@ where
     matrix.iter().map(|row| row[n].clone()).collect()
 }
 
-pub fn rand_matrix(rows: usize, columns: usize) -> Vec<Vec<f64>> {
+pub fn rand_matrix(rows: usize, columns: usize) -> Vec<Vec<f32>> {
     let mut rng = Pcg64::from_entropy();
     let mut result = Vec::new();
 
@@ -119,7 +119,7 @@ pub fn get_network_params() -> NetworkParams {
     (w_1, b_1, w_2, b_2)
 }
 
-pub fn linear_op(action: Operation, matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn linear_op(action: Operation, matrix: &[Vec<f32>], bias: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let row_len = matrix.len();
     let col_len = matrix.first().unwrap().len();
     let mut result = vec![vec![0.0; col_len]; row_len];
@@ -138,7 +138,7 @@ pub fn linear_op(action: Operation, matrix: &[Vec<f64>], bias: &[Vec<f64>]) -> V
     result
 }
 
-pub fn multiply(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
+pub fn multiply(matrix: &[Vec<f32>], coeff: f32) -> Vec<Vec<f32>> {
     let row_len = matrix.len();
     let col_len = matrix.first().unwrap().len();
     let mut result = vec![vec![0.0; col_len]; row_len];
@@ -152,7 +152,7 @@ pub fn multiply(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
     result
 }
 
-pub fn divide(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
+pub fn divide(matrix: &[Vec<f32>], coeff: f32) -> Vec<Vec<f32>> {
     let m = matrix.len();
     let n = matrix.first().unwrap().len();
     let mut result = vec![vec![0.0; n]; m];
@@ -166,7 +166,7 @@ pub fn divide(matrix: &[Vec<f64>], coeff: f64) -> Vec<Vec<f64>> {
     result
 }
 
-pub fn matrix_multiply(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn matrix_multiply(matrix_1: &[Vec<f32>], matrix_2: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let m = matrix_1.len();
     let n = matrix_1.first().unwrap().len();
     let mut result = vec![vec![0.0; n]; m];
@@ -180,7 +180,7 @@ pub fn matrix_multiply(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<
     result
 }
 
-pub fn matrix_subtract(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn matrix_subtract(matrix_1: &[Vec<f32>], matrix_2: &[Vec<f32>]) -> Vec<Vec<f32>> {
     let m = matrix_1.len();
     let n = matrix_1.first().unwrap().len();
     let mut result = vec![vec![0.0; n]; m];
@@ -194,15 +194,15 @@ pub fn matrix_subtract(matrix_1: &[Vec<f64>], matrix_2: &[Vec<f64>]) -> Vec<Vec<
     result
 }
 
-pub fn zeroes(rows: usize, cols: usize) -> Vec<Vec<f64>> {
+pub fn zeroes(rows: usize, cols: usize) -> Vec<Vec<f32>> {
     vec![vec![0.0; cols]; rows]
 }
 
-pub fn row_sum(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
+pub fn row_sum(matrix: &[Vec<f32>]) -> Vec<Vec<f32>> {
     matrix.iter().map(|row| vec![row.iter().sum()]).collect()
 }
 
-pub fn col_sum(matrix: &[Vec<f64>]) -> Vec<f64> {
+pub fn col_sum(matrix: &[Vec<f32>]) -> Vec<f32> {
     let num_cols = matrix.first().unwrap().len();
     let mut result = vec![0.0; num_cols];
 
@@ -215,7 +215,7 @@ pub fn col_sum(matrix: &[Vec<f64>]) -> Vec<f64> {
     result
 }
 
-pub fn matrix_max(m: &[Vec<f64>]) -> f64 {
+pub fn matrix_max(m: &[Vec<f32>]) -> f32 {
     let mut max_value = m[0][0];
     for row in m {
         for &value in row {
@@ -227,7 +227,7 @@ pub fn matrix_max(m: &[Vec<f64>]) -> f64 {
     max_value
 }
 
-pub fn matrix_min(m: &[Vec<f64>]) -> f64 {
+pub fn matrix_min(m: &[Vec<f32>]) -> f32 {
     let mut min_value = m[0][0];
     for row in m {
         for &value in row {
@@ -239,7 +239,7 @@ pub fn matrix_min(m: &[Vec<f64>]) -> f64 {
     min_value
 }
 
-pub fn matrix_avg(m: &[Vec<f64>]) -> f64 {
+pub fn matrix_avg(m: &[Vec<f32>]) -> f32 {
     let num_rows = m.len();
     let num_cols = m.first().unwrap().len();
 
@@ -249,5 +249,5 @@ pub fn matrix_avg(m: &[Vec<f64>]) -> f64 {
             total += value
         }
     }
-    total / (num_rows * num_cols) as f64
+    total / (num_rows * num_cols) as f32
 }

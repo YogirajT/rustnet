@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-pub fn get_w_1_test() -> Vec<Vec<f64>> {
+pub fn get_w_1_test() -> Vec<Vec<f32>> {
     vec![
         vec![
             0.41, -0.06, 0.25, -0.33, 0.36, 0.22, 0.21, 0.41, 0.39, -0.27, -0.19, -0.45, -0.10,
@@ -628,7 +628,7 @@ pub fn get_w_1_test() -> Vec<Vec<f64>> {
     ]
 }
 
-pub fn get_b_1_test() -> Vec<Vec<f64>> {
+pub fn get_b_1_test() -> Vec<Vec<f32>> {
     vec![
         vec![0.39],
         vec![0.17],
@@ -643,7 +643,7 @@ pub fn get_b_1_test() -> Vec<Vec<f64>> {
     ]
 }
 
-pub fn get_w_2_test() -> Vec<Vec<f64>> {
+pub fn get_w_2_test() -> Vec<Vec<f32>> {
     vec![
         vec![
             0.11, 0.20, 0.16, 0.47, -0.43, -0.37, 0.22, -0.43, 0.29, -0.21,
@@ -678,7 +678,7 @@ pub fn get_w_2_test() -> Vec<Vec<f64>> {
     ]
 }
 
-pub fn get_b_2_test() -> Vec<Vec<f64>> {
+pub fn get_b_2_test() -> Vec<Vec<f32>> {
     vec![
         vec![-0.12],
         vec![-0.48],
@@ -693,7 +693,7 @@ pub fn get_b_2_test() -> Vec<Vec<f64>> {
     ]
 }
 
-pub fn get_image_test() -> Vec<Vec<f64>> {
+pub fn get_image_test() -> Vec<Vec<f32>> {
     vec![
         vec![0.0],
         vec![0.0],
@@ -1482,6 +1482,6 @@ pub fn get_image_test() -> Vec<Vec<f64>> {
     ]
 }
 
-pub fn get_image_label_test() -> Vec<Vec<f64>> {
+pub fn get_image_label_test() -> Vec<Vec<f32>> {
     vec![vec![6.0]]
 }

@@ -2,8 +2,8 @@
 
 use console_engine::{pixel, screen::Screen};
 
-pub fn draw(digit: &[f64]) {
-    let sqrt = (digit.len() as f64).sqrt() as usize;
+pub fn draw(digit: &[f32]) {
+    let sqrt = (digit.len() as f32).sqrt() as usize;
 
     let mut scr = Screen::new(sqrt as u32, sqrt as u32);
 

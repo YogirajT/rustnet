@@ -26,7 +26,7 @@ mod tests {
         let matrix4 = vec![vec![1.0, 2.0], vec![3.0, 4.0]];
         assert_eq!(
             dot_product(&matrix3, &matrix4),
-            vec![vec![7., 10.], vec![0.5000000000000001, 0.6000000000000001]]
+            vec![vec![7., 10.], vec![0.5, 0.6]]
         );
     }
 
@@ -83,12 +83,8 @@ mod tests {
         assert_eq!(
             result,
             vec![
-                vec![
-                    0.047425873177566774,
-                    0.047425873177566774,
-                    0.04742587317756679
-                ],
-                vec![0.9525741268224331, 0.9525741268224333, 0.9525741268224334]
+                vec![0.047425874, 0.047425874, 0.047425874],
+                vec![0.95257413, 0.95257413, 0.95257413]
             ]
         );
 
@@ -101,17 +97,9 @@ mod tests {
         assert_eq!(
             softmax(&y),
             vec![
-                vec![
-                    0.0020224658549226203,
-                    8.26489137046391e-7,
-                    4.539559109648753e-5
-                ],
-                vec![
-                    0.18205657441339163,
-                    0.006059796483224012,
-                    5.016988708869179e-5
-                ],
-                vec![0.8159209597316858, 0.993939377027639, 0.9999044345218148]
+                vec![0.002022466, 8.264891e-7, 4.539559e-5],
+                vec![0.18205658, 0.006059794, 5.0169907e-5],
+                vec![0.815921, 0.9939394, 0.9999044]
             ]
         );
     }
@@ -236,8 +224,8 @@ mod tests {
         let _activation_2_max = matrix_max(&activation_2);
 
         assert_eq!(_activation_2_avg, 0.1);
-        assert_eq!(_activation_2_min, 0.003239960256952375);
-        assert_eq!(_activation_2_max, 0.5372429833450435);
+        assert_eq!(_activation_2_min, 0.00323996);
+        assert_eq!(_activation_2_max, 0.53724295);
     }
 
     #[test]
@@ -257,8 +245,8 @@ mod tests {
         let _activation_2_max = matrix_max(&activation_2);
 
         assert_eq!(_activation_2_avg, 0.1);
-        assert_eq!(_activation_2_min, 0.003239960256952375);
-        assert_eq!(_activation_2_max, 0.5372429833450435);
+        assert_eq!(_activation_2_min, 0.00323996);
+        assert_eq!(_activation_2_max, 0.53724295);
 
         let (delta_w_1, delta_b_1, delta_w_2, delta_b_2) = back_propagation(
             (_z_1, _activation_1, _z_2, activation_2),
@@ -271,32 +259,32 @@ mod tests {
         let _delta_w_2_min = matrix_min(&delta_w_2);
         let _delta_w_2_max = matrix_max(&delta_w_2);
 
-        assert_eq!(_delta_w_2_avg, -4.440892098500626E-18);
-        assert_eq!(_delta_w_2_min, -4.479972137763798);
-        assert_eq!(_delta_w_2_max, 2.558414291745961);
+        assert_eq!(_delta_w_2_avg, 4.7683715e-9);
+        assert_eq!(_delta_w_2_min, -4.479972);
+        assert_eq!(_delta_w_2_max, 2.558414);
 
         let _delta_w_1_avg = matrix_avg(&delta_w_1);
         let _delta_w_1_min = matrix_min(&delta_w_1);
         let _delta_w_1_max = matrix_max(&delta_w_1);
 
-        assert_eq!(_delta_w_1_avg, 0.009383504534215189);
-        assert_eq!(_delta_w_1_min, -0.39199314867093915);
-        assert_eq!(_delta_w_1_max, 0.5273504829479152);
+        assert_eq!(_delta_w_1_avg, 0.009383537);
+        assert_eq!(_delta_w_1_min, -0.39199317);
+        assert_eq!(_delta_w_1_max, 0.5273504);
 
         let _delta_b_1_avg = matrix_avg(&delta_b_1);
         let _delta_b_1_min = matrix_min(&delta_b_1);
         let _delta_b_1_max = matrix_max(&delta_b_1);
 
-        assert_eq!(_delta_b_1_avg, 0.07719006815949933);
-        assert_eq!(_delta_b_1_min, -0.39199314867093915);
-        assert_eq!(_delta_b_1_max, 0.5273504829479152);
+        assert_eq!(_delta_b_1_avg, 0.07719006);
+        assert_eq!(_delta_b_1_min, -0.39199317);
+        assert_eq!(_delta_b_1_max, 0.5273504);
 
         let _delta_b_2_avg = matrix_avg(&delta_b_2);
         let _delta_b_2_min = matrix_min(&delta_b_2);
         let _delta_b_2_max = matrix_max(&delta_b_2);
 
-        assert_eq!(_delta_b_2_avg, 0.0);
-        assert_eq!(_delta_b_2_min, -0.9407520917780592);
-        assert_eq!(_delta_b_2_max, 0.5372429833450435);
+        assert_eq!(_delta_b_2_avg, 5.9604646e-9);
+        assert_eq!(_delta_b_2_min, -0.9407521);
+        assert_eq!(_delta_b_2_max, 0.53724295);
     }
 }
