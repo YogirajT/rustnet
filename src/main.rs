@@ -1,12 +1,13 @@
 mod common;
 use std::fs;
+use std::ops::ControlFlow;
 
-use console_engine::{pixel, Color, KeyCode, MouseButton};
 use dotenv::dotenv;
+use rustnet::common::canvas::{draw_canvas_bounds, setup_canvas_controls, setup_mouse_actions};
 use rustnet::common::console::draw;
 use rustnet::common::constants::PREDICTORS_FOLDER;
 use rustnet::common::io::{check_results_exist, read_file_into_vector};
-use rustnet::common::network_functions::{predict, prepare_data, train};
+use rustnet::common::network_functions::{prepare_data, train};
 use rustnet::save_to_file;
 
 fn main() {
@@ -36,74 +37,20 @@ fn main() {
                 engine.wait_frame(); // wait for next frame + capture inputs
                 engine.clear_screen(); // reset the screen
 
-                if engine.is_key_pressed(KeyCode::Char('q')) {
-                    // if the user presses 'q' :
-                    break; // exits app
+                if let ControlFlow::Break(_) = setup_canvas_controls(
+                    &engine,
+                    &mut user_input,
+                    &mut top_instructions,
+                    max_px,
+                    &top_msg,
+                ) {
+                    break;
                 }
 
-                if engine.is_key_pressed(KeyCode::Char('p')) {
-                    let prediction = predict(
-                        user_input[1..]
-                            .iter()
-                            .map(|row| row[1..].to_vec())
-                            .collect(),
-                    );
-                    top_instructions = format!("Prediction:{prediction}");
-                }
+                // draws the boundaries for canvas
+                draw_canvas_bounds(&mut engine, max_px, &bottom_instructions, &top_instructions);
 
-                if engine.is_key_pressed(KeyCode::Char('e')) {
-                    // erase the console
-                    user_input =
-                        vec![vec![0.0; max_px.try_into().unwrap()]; max_px.try_into().unwrap()];
-                    top_instructions = top_msg.clone();
-                }
-
-                engine.line(
-                    0,
-                    0,
-                    0,
-                    max_px.try_into().unwrap(),
-                    pixel::pxl_fg('*', Color::White),
-                );
-                engine.line(
-                    0,
-                    0,
-                    max_px.try_into().unwrap(),
-                    0,
-                    pixel::pxl_fg('*', Color::White),
-                );
-                engine.line(
-                    max_px as i32,
-                    0,
-                    max_px as i32,
-                    max_px as i32,
-                    pixel::pxl_fg('*', Color::White),
-                );
-                engine.line(
-                    0,
-                    max_px as i32,
-                    max_px as i32,
-                    max_px as i32,
-                    pixel::pxl_fg('*', Color::White),
-                );
-
-                engine.print(3, max_px.try_into().unwrap(), &bottom_instructions); // prints some value at [0,4]
-                engine.print(
-                    ((max_px - top_instructions.len() as u32) / 2)
-                        .try_into()
-                        .unwrap(),
-                    0,
-                    &top_instructions,
-                ); // prints some value at [0,4]
-
-                let mouse_pos = engine.get_mouse_held(MouseButton::Left);
-
-                if let Some(mouse_pos) = mouse_pos {
-                    top_instructions = top_msg.clone();
-                    if mouse_pos.0 < 29 && mouse_pos.1 < 29 && mouse_pos.0 > 0 && mouse_pos.1 > 0 {
-                        user_input[mouse_pos.0 as usize][mouse_pos.1 as usize] = 1.0;
-                    }
-                }
+                setup_mouse_actions(&engine, &mut top_instructions, &top_msg, &mut user_input);
 
                 draw(&mut engine, user_input.clone());
 
@@ -111,7 +58,7 @@ fn main() {
             }
         }
         false => {
-            println!("Predictors not found, retraining");
+            println!("Predictors not found, re-training");
 
             let training_set = read_file_into_vector();
 
@@ -136,9 +83,7 @@ fn main() {
             save_to_file!(w_2);
             save_to_file!(b_2);
 
-            println!(
-                "Predictors generated, please rerun the program to launch console draw-and-predict"
-            );
+            println!("Predictors generated, please rerun the program to launch prediction canvas");
         }
     }
 }

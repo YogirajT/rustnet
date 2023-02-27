@@ -128,6 +128,6 @@ tasks.json
 
 ## TODO
 - [x] Build and train neural network.
-- [ ] Add draw in terminal feature.
+- [x] Add draw in terminal feature.
 - [ ] Enable Multi threading for matrix operations.
 - [ ] Refactoring and optimizations with advanced rust.

@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-
 use console_engine::{pixel, screen::Screen, ConsoleEngine};
 
 pub fn draw_digit(digit: &[f32]) {

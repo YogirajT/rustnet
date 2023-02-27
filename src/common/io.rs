@@ -1,13 +1,11 @@
 #![allow(dead_code)]
+use super::matrix::create_vec_from_csv;
+use super::types::NetworkParams;
+use csv::ReaderBuilder;
 use std::fmt::Display;
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::Path;
-
-use csv::ReaderBuilder;
-
-use super::matrix::create_vec_from_csv;
-use super::types::NetworkParams;
 
 const FILE_PATH: &str = "results/";
 
