@@ -41,6 +41,22 @@ cargo run < {file_path} ## It takes a while to train as it is not fully optimize
 |  | /tests | Unit and integration tests |  |
 |  |  | matrix.rs | Test code |
 
+## Architecture
+* m = sample size
+```
+           OPERATION           DATA DIMENSIONS   WEIGHTS(N)
+
+               Input   #####      m 784
+        Scale(1/255)   ||||| -------------------                 
+                       #####      m 784
+           Transpose   ||||| -------------------
+                       #####      784 m
+               Dense   XXXXX -------------------    10x784
+                relu   #####       10 m
+               Dense   XXXXX -------------------     10x10
+             softmax   #####       10 m
+```
+
 ## Additional info
 * Folders
 <picture>
@@ -114,4 +130,4 @@ tasks.json
 - [x] Build and train neural network.
 - [ ] Add draw in terminal feature.
 - [ ] Enable Multi threading for matrix operations.
-- [ ] DRY code with advanced rust.
+- [ ] Refactoring and optimizations with advanced rust.

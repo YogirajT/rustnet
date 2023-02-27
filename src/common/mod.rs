@@ -1,4 +1,5 @@
 pub mod console;
+pub mod constants;
 pub mod integration_test_vars;
 pub mod io;
 pub mod matrix;

@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use console_engine::{pixel, screen::Screen};
+use console_engine::{pixel, screen::Screen, ConsoleEngine};
 
-pub fn draw(digit: &[f32]) {
+pub fn draw_digit(digit: &[f32]) {
     let sqrt = (digit.len() as f32).sqrt() as usize;
 
     let mut scr = Screen::new(sqrt as u32, sqrt as u32);
@@ -21,4 +21,14 @@ pub fn draw(digit: &[f32]) {
     }
 
     scr.draw()
+}
+
+pub fn draw(engine: &mut ConsoleEngine, digit: Vec<Vec<f32>>) {
+    for (i, row) in digit.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate() {
+            if *cell > 0.0 {
+                engine.set_pxl(i as i32, j as i32, pixel::pxl('#'));
+            }
+        }
+    }
 }

@@ -1,8 +1,9 @@
 #![allow(dead_code)]
+use super::io::load_network_params;
 use super::matrix::Operation::Add;
 use super::matrix::{
-    col_sum, divide, get_network_params, matrix_max, matrix_multiply, multiply, row_sum,
-    shuffle_matrix, split_matrix,
+    col_sum, create_network_params, divide, get_nth_column, matrix_max, matrix_multiply, multiply,
+    row_sum, shuffle_matrix, split_matrix,
 };
 use super::{
     matrix::{dot_product, linear_op, matrix_subtract, transpose, zeroes},
@@ -171,7 +172,7 @@ pub fn train(
     iterations: usize,
     alpha: f32,
 ) -> NetworkParams {
-    let (mut w_1, mut b_1, mut w_2, mut b_2) = get_network_params();
+    let (mut w_1, mut b_1, mut w_2, mut b_2) = create_network_params();
 
     for i in 0..iterations {
         let forward_prop = forward_propagation(
@@ -191,14 +192,12 @@ pub fn train(
         w_2 = matrix_subtract(&w_2, &multiply(&delta_w_2, alpha));
         b_2 = matrix_subtract(&b_2, &multiply(&delta_b_2, alpha));
 
-        if (i + 1) % (iterations / 10) == 0 {
-            println!("Iteration: {}", i + 1);
-            let prediction = get_predictions(&forward_prop.3.clone());
-            println!(
-                "Accuracy: {}",
-                get_accuracy(&train_labels.clone(), prediction)
-            )
-        }
+        println!("Iteration: {}", i + 1);
+        let prediction = get_predictions(&forward_prop.3.clone());
+        println!(
+            "Accuracy: {}",
+            get_accuracy(&train_labels.clone(), prediction)
+        )
     }
 
     (w_1, b_1, w_2, b_2)
@@ -214,4 +213,22 @@ pub fn prepare_data(mut dev_set: Vec<Vec<f32>>) -> (Vec<Vec<f32>>, Vec<Vec<f32>>
     let train_data = divide(&dev_data, 255.0);
 
     (train_labels, train_data)
+}
+
+pub fn predict(matrix: Vec<Vec<f32>>) -> String {
+    let flat_array = transpose(&[matrix.concat()]);
+
+    let (w_1, b_1, w_2, b_2) = load_network_params();
+
+    let (_, _, _, ac2) = forward_propagation((w_1, b_1, w_2, b_2), &flat_array);
+
+    let col = get_nth_column(&ac2, 0);
+
+    let (index, _) = col
+        .iter()
+        .enumerate()
+        .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+        .unwrap();
+
+    index.to_string()
 }

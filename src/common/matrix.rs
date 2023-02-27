@@ -4,7 +4,6 @@ use csv::Reader;
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
 use std::clone::Clone;
-use std::io::Stdin;
 
 pub enum Operation {
     Subtract,
@@ -36,7 +35,7 @@ pub fn dot_product(matrix_1: &[Vec<f32>], matrix_2: &[Vec<f32>]) -> Vec<Vec<f32>
     result
 }
 
-pub fn create_vec_from_csv(mut rdr: Reader<Stdin>) -> Vec<Vec<f32>> {
+pub fn create_vec_from_csv<T: std::io::Read>(mut rdr: Reader<T>) -> Vec<Vec<f32>> {
     let mut vec = Vec::new();
     for result in rdr.records() {
         let record = result.unwrap();
@@ -110,7 +109,7 @@ pub fn rand_matrix(rows: usize, columns: usize) -> Vec<Vec<f32>> {
     result
 }
 
-pub fn get_network_params() -> NetworkParams {
+pub fn create_network_params() -> NetworkParams {
     let w_1 = rand_matrix(10, 784);
     let b_1 = rand_matrix(10, 1);
     let w_2 = rand_matrix(10, 10);
