@@ -62,8 +62,9 @@ cargo run < {file_path} ## It takes a while to train as it is not fully optimize
 <picture>
   <img alt="Product image" src="__docs__/folder-structure.png">
 </picture>
-* if you wish to debug with vs code here's a sample sonfiguration that works on Ubuntu 22.0 and VS code with 
 
+
+* If you wish to debug with vs code here's a sample sonfiguration that works on Ubuntu 22.0 and VS code with 
 ```
 launch.json
 {
