@@ -266,6 +266,7 @@ pub fn flip_rotate(matrix: &mut Vec<Vec<f32>>) {
         }
     }
 
+    // flip after rotate as these matrix operations are not commutative
     result.reverse();
 
     // Assign the rotated elements back to the original matrix

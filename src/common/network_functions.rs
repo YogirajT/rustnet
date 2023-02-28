@@ -218,6 +218,7 @@ pub fn prepare_data(mut dev_set: Vec<Vec<f32>>) -> (Vec<Vec<f32>>, Vec<Vec<f32>>
 pub fn predict(input: Vec<Vec<f32>>) -> String {
     let mut matrix = input;
 
+    // this is needed coz the coordinates received from console engine are flipped and rotated 90deg
     flip_rotate(&mut matrix);
 
     let flat_array = transpose(&[matrix.concat()]);
