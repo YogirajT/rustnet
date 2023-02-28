@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+use crate::common::console::draw;
+
 use super::network_functions::predict;
 use console_engine::{pixel, Color, ConsoleEngine, KeyCode, MouseButton};
 use std::ops::ControlFlow;
@@ -67,7 +69,7 @@ pub fn setup_canvas_controls(
         *user_input = vec![vec![0.0; max_px.try_into().unwrap()]; max_px.try_into().unwrap()];
         *top_instructions = top_msg.to_owned();
     }
-    ControlFlow::Continue(())
+    ControlFlow::Continue(()) // continues the loop
 }
 
 pub fn predict_hook(
@@ -75,7 +77,7 @@ pub fn predict_hook(
     user_input: &[Vec<f32>],
     top_instructions: &mut String,
 ) {
-    if engine.is_key_pressed(KeyCode::Char('p')) {
+    if engine.is_key_pressed(KeyCode::Char('s')) {
         // remove the first row and column of the canvas as it is 1 px larger than our input
         let prediction = predict(
             user_input[1..]
@@ -101,5 +103,46 @@ pub fn setup_mouse_actions(
         if mouse_pos.0 < 29 && mouse_pos.1 < 29 && mouse_pos.0 > 0 && mouse_pos.1 > 0 {
             user_input[mouse_pos.0 as usize][mouse_pos.1 as usize] = 0.9;
         }
+    }
+}
+
+pub fn init_canvas() {
+    println!("Predictors found, please use the terminal to draw a number");
+
+    let max_px = 29;
+
+    let mut engine = console_engine::ConsoleEngine::init_fill_require(max_px, max_px, 30).unwrap();
+
+    // main loop, be aware that you'll have to break it because ctrl+C is captured
+    let mut user_input: Vec<Vec<f32>> =
+        vec![vec![0.0; max_px.try_into().unwrap()]; max_px.try_into().unwrap()];
+
+    let bottom_instructions = "Controls e-CLEAR, q-QUIT".to_owned();
+
+    let top_msg = "Controls p-PREDICT".to_owned();
+    let mut top_instructions = top_msg.clone();
+
+    loop {
+        engine.wait_frame(); // wait for next frame + capture inputs
+        engine.clear_screen(); // reset the screen
+
+        if let ControlFlow::Break(_) = setup_canvas_controls(
+            &engine,
+            &mut user_input,
+            &mut top_instructions,
+            max_px,
+            &top_msg,
+        ) {
+            break;
+        }
+
+        // draws the boundaries for canvas
+        draw_canvas_bounds(&mut engine, max_px, &bottom_instructions, &top_instructions);
+
+        setup_mouse_actions(&engine, &mut top_instructions, &top_msg, &mut user_input);
+
+        draw(&mut engine, user_input.clone());
+
+        engine.draw(); // draw the screen
     }
 }

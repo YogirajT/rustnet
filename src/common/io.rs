@@ -1,4 +1,7 @@
 #![allow(dead_code)]
+use crate::common::constants::PREDICTORS_FOLDER;
+use crate::save_to_file;
+
 use super::matrix::create_vec_from_csv;
 use super::types::NetworkParams;
 use csv::ReaderBuilder;
@@ -114,4 +117,18 @@ pub fn load_network_params() -> NetworkParams {
     let w_2 = create_vec_from_csv(w_2_reader);
 
     (w_1, b_1, w_2, b_2)
+}
+
+pub fn save_predictors(
+    w_1: Vec<Vec<f32>>,
+    b_1: Vec<Vec<f32>>,
+    w_2: Vec<Vec<f32>>,
+    b_2: Vec<Vec<f32>>,
+) {
+    fs::create_dir_all(PREDICTORS_FOLDER).expect("Already Exists");
+
+    save_to_file!(w_1);
+    save_to_file!(b_1);
+    save_to_file!(w_2);
+    save_to_file!(b_2);
 }

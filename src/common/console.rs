@@ -8,7 +8,7 @@ pub fn draw_digit(digit: &[f32]) {
 
     for i in 0..sqrt {
         for j in 0..sqrt {
-            // flip and rorate image changed due to transpose;
+            // flip and rorate image to work with scr co-ordinates;
 
             let row_index = sqrt - 1 - j;
             let col_index = i * sqrt;

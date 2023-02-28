@@ -250,3 +250,24 @@ pub fn matrix_avg(m: &[Vec<f32>]) -> f32 {
     }
     total / (num_rows * num_cols) as f32
 }
+
+pub fn flip_rotate(matrix: &mut Vec<Vec<f32>>) {
+    let rows = matrix.len();
+    let cols = matrix[0].len();
+
+    let mut result = vec![vec![0.0; rows]; cols];
+
+    for (i, row) in matrix.iter().enumerate() {
+        for (j, cell) in row.iter().enumerate() {
+            let new_i = j;
+            let new_j = rows - i - 1;
+
+            result[new_i][new_j] = *cell;
+        }
+    }
+
+    result.reverse();
+
+    // Assign the rotated elements back to the original matrix
+    *matrix = result;
+}

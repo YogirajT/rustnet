@@ -4,7 +4,7 @@ rustnet is a 2 layered neural network written from scratch which uses gradiant d
 ## How to run
 
 * [Install rust](https://www.rust-lang.org/tools/install).
-* Make sure `.env` file is present in the root path. (refer to .env_sample for which varibles can be set)
+* Make sure `.env` file is present in the root path. (refer to .env_sample for which variables can be set)
 * Use the following command to start training the neural network,
 ```
 cargo run < {file_path} ## It takes a while to train as it is not fully optimized yet.
@@ -126,9 +126,16 @@ tasks.json
 }
 ```
 
+## DEMO
+* Canvas drawin prediction
+<picture>
+  <img alt="Product image" src="__docs__/canvas-demo.gif">
+</picture>
+
 
 ## TODO
 - [x] Build and train neural network.
 - [x] Add draw in terminal feature.
 - [ ] Enable Multi threading for matrix operations.
+- [ ] Explore faster matrix operation (e.g. Strassen's algorithm for fast matrix multiplication)
 - [ ] Refactoring and optimizations with advanced rust.

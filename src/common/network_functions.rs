@@ -2,8 +2,8 @@
 use super::io::load_network_params;
 use super::matrix::Operation::Add;
 use super::matrix::{
-    col_sum, create_network_params, divide, get_nth_column, matrix_max, matrix_multiply, multiply,
-    row_sum, shuffle_matrix, split_matrix,
+    col_sum, create_network_params, divide, flip_rotate, get_nth_column, matrix_max,
+    matrix_multiply, multiply, row_sum, shuffle_matrix, split_matrix,
 };
 use super::{
     matrix::{dot_product, linear_op, matrix_subtract, transpose, zeroes},
@@ -215,7 +215,11 @@ pub fn prepare_data(mut dev_set: Vec<Vec<f32>>) -> (Vec<Vec<f32>>, Vec<Vec<f32>>
     (train_labels, train_data)
 }
 
-pub fn predict(matrix: Vec<Vec<f32>>) -> String {
+pub fn predict(input: Vec<Vec<f32>>) -> String {
+    let mut matrix = input;
+
+    flip_rotate(&mut matrix);
+
     let flat_array = transpose(&[matrix.concat()]);
 
     let (w_1, b_1, w_2, b_2) = load_network_params();

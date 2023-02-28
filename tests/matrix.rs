@@ -2,15 +2,15 @@
 mod tests {
     use rustnet::common::{
         integration_test_vars::{
-            get_b_1_test, get_b_2_test, get_image_label_test, get_image_predict, get_image_test,
-            get_w_1_test, get_w_2_test,
+            get_b_1_test, get_b_2_test, get_image_label_test, get_image_test, get_w_1_test,
+            get_w_2_test,
         },
         matrix::{
             dot_product, get_nth_column, linear_op, matrix_avg, matrix_max, matrix_min,
             matrix_multiply, matrix_subtract, row_sum, transpose, Operation,
         },
         network_functions::{
-            back_propagation, forward_propagation, get_predictions, predict, relu, softmax,
+            back_propagation, forward_propagation, get_predictions, relu, softmax,
             transform_labels_to_network_output,
         },
     };
