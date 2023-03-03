@@ -3,7 +3,11 @@ use super::types::NetworkParams;
 use csv::Reader;
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
-use std::clone::Clone;
+use std::{
+    clone::Clone,
+    sync::{mpsc, Arc},
+    thread::available_parallelism,
+};
 
 pub enum Operation {
     Subtract,
@@ -238,16 +242,45 @@ pub fn matrix_min(m: &[Vec<f32>]) -> f32 {
     min_value
 }
 
-pub fn matrix_avg(m: &[Vec<f32>]) -> f32 {
-    let num_rows = m.len();
-    let num_cols = m.first().unwrap().len();
+pub fn matrix_avg(matrix: &[Vec<f32>]) -> f32 {
+    let num_rows = matrix.len();
+    let num_cols = matrix.first().unwrap().len();
+
+    let data = Arc::new(matrix.to_vec());
+
+    let (sender, receiver) = mpsc::channel();
 
     let mut total = 0.0;
-    for row in m {
-        for &value in row {
-            total += value
-        }
+
+    let available_threads = available_parallelism().unwrap().get();
+
+    let mut threads = Vec::new();
+
+    for idx in 0..available_threads {
+        let sender_clone = sender.clone();
+        let data = data.clone();
+
+        threads.push(std::thread::spawn(move || {
+            // determine the part of shared data to be accessed by this thread
+            let begin = data.len() * idx / available_threads;
+            let end = data.len() * (idx + 1) / available_threads;
+            let slc = &data[begin..end];
+            // work on this slice
+            let mut sum = 0.0;
+            for row in slc {
+                for &value in row {
+                    sum += value;
+                }
+            }
+            sender_clone.send(sum).unwrap();
+        }));
     }
+
+    for th in threads {
+        total += receiver.recv().unwrap();
+        th.join().unwrap();
+    }
+
     total / (num_rows * num_cols) as f32
 }
 
