@@ -3,7 +3,13 @@ use std::ops::Add;
 use std::ops::{Deref, DerefMut};
 use std::vec::Vec;
 
-struct NumpyVec<T>(Vec<T>);
+pub struct NumpyVec<T>(pub Vec<T>);
+
+impl<T: Add<Output = T>> NumpyVec<T> {
+    pub fn new(data: Vec<T>) -> NumpyVec<T> {
+        NumpyVec(data)
+    }
+}
 
 #[macro_export]
 macro_rules! save_to_file {
@@ -37,9 +43,9 @@ impl<T: Add<Output = T> + Copy + 'static> Add<NumpyVec<NumpyVec<T>>> for NumpyVe
 where
     &'static T: std::ops::Add<T>,
 {
-    type Output = Vec<T>;
+    type Output = Vec<Vec<T>>;
 
-    fn add(self, _rhs: NumpyVec<NumpyVec<T>>) -> std::vec::Vec<T> {
+    fn add(self, _rhs: NumpyVec<NumpyVec<T>>) -> Vec<Vec<T>> {
         assert!(
             self.len() == _rhs.len()
                 && (self.first().unwrap().len() == _rhs.first().unwrap().len()
@@ -47,7 +53,7 @@ where
             "Matrix dimensions must match for addition."
         );
 
-        let result = Vec::new();
+        let mut result: Vec<Vec<T>> = Vec::new();
 
         for (i, row) in self.iter().enumerate() {
             let mut new_row = Vec::new();
@@ -58,6 +64,7 @@ where
                     new_row.push(*cell + _rhs[i][j]);
                 }
             }
+            result.push(new_row);
         }
         result
     }

@@ -1,18 +1,21 @@
 #[cfg(test)]
 mod tests {
-    use rustnet::common::{
-        integration_test_vars::{
-            get_b_1_test, get_b_2_test, get_image_label_test, get_image_test, get_w_1_test,
-            get_w_2_test,
+    use rustnet::{
+        common::{
+            integration_test_vars::{
+                get_b_1_test, get_b_2_test, get_image_label_test, get_image_test, get_w_1_test,
+                get_w_2_test,
+            },
+            matrix::{
+                dot_product, get_nth_column, linear_op, matrix_avg, matrix_max, matrix_min,
+                matrix_multiply, matrix_subtract, row_sum, transpose, Operation,
+            },
+            network_functions::{
+                back_propagation, forward_propagation, get_predictions, relu, softmax,
+                transform_labels_to_network_output,
+            },
         },
-        matrix::{
-            dot_product, get_nth_column, linear_op, matrix_avg, matrix_max, matrix_min,
-            matrix_multiply, matrix_subtract, row_sum, transpose, Operation,
-        },
-        network_functions::{
-            back_propagation, forward_propagation, get_predictions, relu, softmax,
-            transform_labels_to_network_output,
-        },
+        NumpyVec,
     };
 
     #[test]
@@ -279,5 +282,39 @@ mod tests {
         assert_eq!(_delta_b_2_avg, 5.9604646e-9);
         assert_eq!(_delta_b_2_min, -0.9407521);
         assert_eq!(_delta_b_2_max, 0.53724295);
+    }
+
+    #[test]
+    fn test_operator_overload() {
+        let r1_1 = NumpyVec(vec![1.0, 2.0, 3.0]);
+        let r1_2 = NumpyVec(vec![4.0, 5.0, 6.0]);
+
+        let x = NumpyVec(vec![r1_1, r1_2]);
+
+        let r2_1 = NumpyVec(vec![1.0, 2.0, 3.0]);
+        let r2_2 = NumpyVec(vec![4.0, 5.0, 6.0]);
+
+        let y = NumpyVec(vec![r2_1, r2_2]);
+
+        let result = x + y;
+
+        assert_eq!(result, vec![vec![2.0, 4.0, 6.0], vec![8.0, 10.0, 12.0]]);
+    }
+
+    #[test]
+    fn test_single_column_addition_operator_overload() {
+        let r1_1 = NumpyVec(vec![1.0, 2.0, 3.0]);
+        let r1_2 = NumpyVec(vec![4.0, 5.0, 6.0]);
+
+        let x = NumpyVec(vec![r1_1, r1_2]);
+
+        let r2_1 = NumpyVec(vec![1.0]);
+        let r2_2 = NumpyVec(vec![2.0]);
+
+        let y = NumpyVec(vec![r2_1, r2_2]);
+
+        let result = x + y;
+
+        assert_eq!(result, vec![vec![2.0, 3.0, 4.0], vec![6.0, 7.0, 8.0]]);
     }
 }
