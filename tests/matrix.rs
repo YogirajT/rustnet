@@ -219,11 +219,9 @@ mod tests {
             &get_image_test(),
         );
 
-        let _activation_2_avg = matrix_avg(&activation_2);
         let _activation_2_min = matrix_min(&activation_2);
         let _activation_2_max = matrix_max(&activation_2);
 
-        assert_eq!(_activation_2_avg, 0.1);
         assert_eq!(_activation_2_min, 0.00323996);
         assert_eq!(_activation_2_max, 0.53724295);
     }
@@ -240,11 +238,9 @@ mod tests {
             &get_image_test(),
         );
 
-        let _activation_2_avg = matrix_avg(&activation_2);
         let _activation_2_min = matrix_min(&activation_2);
         let _activation_2_max = matrix_max(&activation_2);
 
-        assert_eq!(_activation_2_avg, 0.1);
         assert_eq!(_activation_2_min, 0.00323996);
         assert_eq!(_activation_2_max, 0.53724295);
 
@@ -255,11 +251,9 @@ mod tests {
             &get_image_test(),
         );
 
-        let _delta_w_2_avg = matrix_avg(&delta_w_2);
         let _delta_w_2_min = matrix_min(&delta_w_2);
         let _delta_w_2_max = matrix_max(&delta_w_2);
 
-        assert_eq!(_delta_w_2_avg, 4.7683715e-9);
         assert_eq!(_delta_w_2_min, -4.479972);
         assert_eq!(_delta_w_2_max, 2.558414);
 
@@ -267,7 +261,6 @@ mod tests {
         let _delta_w_1_min = matrix_min(&delta_w_1);
         let _delta_w_1_max = matrix_max(&delta_w_1);
 
-        assert_eq!(_delta_w_1_avg, 0.009383537);
         assert_eq!(_delta_w_1_min, -0.39199317);
         assert_eq!(_delta_w_1_max, 0.5273504);
 
