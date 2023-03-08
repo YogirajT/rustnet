@@ -114,13 +114,6 @@ tasks.json
             "group": "test",
             "label": "rust: cargo test",
             "args": ["test", "--no-run"]
-        },
-        {
-            "type": "shell",
-            "label": "cargo test build",
-            "command": "cargo",
-            "args": ["test", "--no-run"],
-            "problemMatcher": ["$rustc"]
         }
     ]
 }
