@@ -77,7 +77,7 @@ pub fn predict_hook(
     user_input: &[Vec<f32>],
     top_instructions: &mut String,
 ) {
-    if engine.is_key_pressed(KeyCode::Char('s')) {
+    if engine.is_key_pressed(KeyCode::Char('p')) {
         // remove the first row and column of the canvas as it is 1 px larger than our input
         let prediction = predict(
             user_input[1..]
