@@ -129,6 +129,6 @@ tasks.json
 ## TODO
 - [x] Build and train neural network.
 - [x] Add draw in terminal feature.
-- [ ] Enable Multi threading for matrix operations.
+- [x] Enable Multi threading for matrix operations.
 - [ ] Explore faster matrix operation (e.g. Strassen's algorithm for fast matrix multiplication)
 - [ ] Refactoring and optimizations with advanced rust.
