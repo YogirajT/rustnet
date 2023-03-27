@@ -1,11 +1,12 @@
 pub mod common;
-use std::ops::Add;
+use std::ops::{Add, Mul};
 use std::ops::{Deref, DerefMut};
 use std::vec::Vec;
 
+#[derive(Clone)]
 pub struct NumpyVec<T>(pub Vec<T>);
 
-impl<T: Add<Output = T>> NumpyVec<T> {
+impl<T: Add<Output = T> + Mul<Output = T> + Copy> NumpyVec<T> {
     pub fn new(data: Vec<T>) -> NumpyVec<T> {
         NumpyVec(data)
     }
@@ -45,7 +46,7 @@ where
 {
     type Output = Vec<Vec<T>>;
 
-    fn add(self, _rhs: NumpyVec<NumpyVec<T>>) -> Vec<Vec<T>> {
+    fn add(self, _rhs: NumpyVec<NumpyVec<T>>) -> Self::Output {
         assert!(
             self.len() == _rhs.len()
                 && (self.first().unwrap().len() == _rhs.first().unwrap().len()
@@ -62,6 +63,37 @@ where
                     new_row.push(*cell + _rhs[i][0]);
                 } else {
                     new_row.push(*cell + _rhs[i][j]);
+                }
+            }
+            result.push(new_row);
+        }
+        result
+    }
+}
+
+impl<T: Mul<Output = T> + Copy + 'static> Mul<NumpyVec<NumpyVec<T>>> for NumpyVec<NumpyVec<T>>
+where
+    &'static T: std::ops::Mul<T>,
+{
+    type Output = Vec<Vec<T>>;
+
+    fn mul(self, _rhs: NumpyVec<NumpyVec<T>>) -> Self::Output {
+        assert!(
+            self.len() == _rhs.len()
+                && (self.first().unwrap().len() == _rhs.first().unwrap().len()
+                    || _rhs.first().unwrap().len() == 1),
+            "Matrix dimensions must match for multiplication."
+        );
+
+        let mut result: Vec<Vec<T>> = Vec::new();
+
+        for (i, row) in self.iter().enumerate() {
+            let mut new_row = Vec::new();
+            for (j, cell) in row.iter().enumerate() {
+                if _rhs.first().unwrap().len() == 1 {
+                    new_row.push(*cell * _rhs[i][0]);
+                } else {
+                    new_row.push(*cell * _rhs[i][j]);
                 }
             }
             result.push(new_row);

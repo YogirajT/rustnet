@@ -317,4 +317,21 @@ mod tests {
 
         assert_eq!(result, vec![vec![2.0, 3.0, 4.0], vec![6.0, 7.0, 8.0]]);
     }
+
+    #[test]
+    fn test_matrix_multiply_operator() {
+        let x = vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]];
+        let result = matrix_multiply(&x, &x);
+
+        assert_eq!(result, vec![vec![1.0, 4.0, 9.0], vec![16.0, 25.0, 36.0]]);
+
+        let vec1 = NumpyVec(vec![1.0, 2.0, 3.0]);
+        let vec2 = NumpyVec(vec![4.0, 5.0, 6.0]);
+        let new_vec1 = vec![vec1, vec2];
+        let vec3 = NumpyVec(new_vec1);
+
+        let result2 = vec3.clone() * vec3;
+
+        assert_eq!(result, result2);
+    }
 }

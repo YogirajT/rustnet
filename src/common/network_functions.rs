@@ -114,20 +114,29 @@ pub fn forward_propagation(
     network_params: NetworkParams,
     input_image: &[Vec<f32>],
 ) -> NetworkParams {
+    //m is the input size
+    // w_1: 10x784  b_1: 10x1  w_2: 10x10  b2: 10x1
     let (w_1, b_1, w_2, b_2) = network_params;
 
+    // weighted_input:10xm input_image: 784xm w_1: 10x784
     let weighted_input = dot_product(&w_1, input_image);
 
+    // z_1: 10xm weighted_input: 10xm b_1: 10x1
     let z_1 = linear_op(Add, &weighted_input, &b_1);
 
+    // activation_1: 10xm z_1:10xm
     let activation_1 = relu(&z_1);
 
+    // weighted_l1: 10xm activation_1: 10xm w_2: 10x10
     let weighted_l1 = dot_product(&w_2, &activation_1);
 
+    // z_2: 10xm weighted_l1: 10xm b2: 10x1
     let z_2 = linear_op(Add, &weighted_l1, &b_2);
 
+    // activation_2: 10xm z_2: 10xm
     let activation_2 = softmax(&z_2);
 
+    // z_1: 10xm  activation_1: 10xm  z_2: 10xm  activation_2: 10xm
     (z_1, activation_1, z_2, activation_2)
 }
 
@@ -137,32 +146,48 @@ pub fn back_propagation(
     labels: Vec<Vec<f32>>,
     input_image: &[Vec<f32>],
 ) -> NetworkParams {
+    //m is the input size
+
+    // z_1: 10xm  activation_1: 10xm  activation_2: 10xm
     let (z_1, activation_1, _z_2, activation_2) = network_params;
 
+    // labels: 1xm
     let m_inverse = 1.0 / (labels.first().unwrap().len() as f32);
 
+    // expected_labels: 10xm  labels: 1xm
     let expected_labels = transform_labels_to_network_output(&labels);
 
+    // delta_z_2: 10xm  activation_2: 10xm  expected_labels: 10xm
     let delta_z_2 = matrix_subtract(&activation_2, &expected_labels);
 
+    // transposed_a_1: mx10  activation_1: 10xm
     let transposed_a_1 = transpose(&activation_1);
 
+    // delta_w_2: 10x10  delta_z_2: 10xm  transposed_a_1: mx10  m_inverse: f32
     let delta_w_2 = multiply(&dot_product(&delta_z_2, &transposed_a_1), m_inverse);
 
+    // sum_delta_z_2: 10x1  delta_z_2: 10xm
     let sum_delta_z_2 = row_sum(&delta_z_2);
 
+    // delta_b_2: 10x1  sum_delta_z_2: 10x1  m_inverse: f32
     let delta_b_2 = multiply(&sum_delta_z_2, m_inverse);
 
+    // dot_w_2_d_z_2: 10xm  w_2: 10x10  delta_z_2: 10xm
     let dot_w_2_d_z_2 = dot_product(&transpose(&w_2), &delta_z_2);
 
+    // deriv_z_1: 10xm  z_1: 10xm
     let deriv_z_1 = relu_derivative(&z_1);
 
+    // delta_z_1: 10xm  dot_w_2_d_z_2: 10xm  deriv_z_1: 10xm
     let delta_z_1 = matrix_multiply(&dot_w_2_d_z_2, &deriv_z_1);
 
+    // delta_w_1: 10x784  delta_z_1: 10xm  input_image: 784xm  m_inverse: f32
     let delta_w_1 = multiply(&dot_product(&delta_z_1, &transpose(input_image)), m_inverse);
 
+    // delta_b_1: 10x1  delta_z_1: 10xm  m_inverse: f32
     let delta_b_1 = multiply(&row_sum(&delta_z_1), m_inverse);
 
+    // delta_w_1: 10x784  delta_b_1: 10x1  delta_w_2: 10x10  delta_b_2: 10x1
     (delta_w_1, delta_b_1, delta_w_2, delta_b_2)
 }
 
