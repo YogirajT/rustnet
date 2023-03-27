@@ -1,21 +1,19 @@
 #[cfg(test)]
 mod tests {
-    use rustnet::{
-        common::{
-            integration_test_vars::{
-                get_b_1_test, get_b_2_test, get_image_label_test, get_image_test, get_w_1_test,
-                get_w_2_test,
-            },
-            matrix::{
-                dot_product, get_nth_column, linear_op, matrix_avg, matrix_max, matrix_min,
-                matrix_multiply, matrix_subtract, row_sum, transpose, Operation,
-            },
-            network_functions::{
-                back_propagation, forward_propagation, get_predictions, relu, softmax,
-                transform_labels_to_network_output,
-            },
+    use rustnet::common::{
+        integration_test_vars::{
+            get_b_1_test, get_b_2_test, get_image_label_test, get_image_test, get_w_1_test,
+            get_w_2_test,
         },
-        NumpyVec,
+        matrix::{
+            dot_product, get_nth_column, linear_op, matrix_avg, matrix_max, matrix_min,
+            matrix_multiply, matrix_subtract, row_sum, transpose, Operation,
+        },
+        network_functions::{
+            back_propagation, forward_propagation, get_predictions, relu, softmax,
+            transform_labels_to_network_output,
+        },
+        numpy_vec::NumpyVec,
     };
 
     #[test]
@@ -286,15 +284,8 @@ mod tests {
 
     #[test]
     fn test_operator_overload() {
-        let r1_1 = NumpyVec(vec![1.0, 2.0, 3.0]);
-        let r1_2 = NumpyVec(vec![4.0, 5.0, 6.0]);
-
-        let x = NumpyVec(vec![r1_1, r1_2]);
-
-        let r2_1 = NumpyVec(vec![1.0, 2.0, 3.0]);
-        let r2_2 = NumpyVec(vec![4.0, 5.0, 6.0]);
-
-        let y = NumpyVec(vec![r2_1, r2_2]);
+        let x = NumpyVec(vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
+        let y = NumpyVec(vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
 
         let result = x + y;
 
@@ -303,15 +294,9 @@ mod tests {
 
     #[test]
     fn test_single_column_addition_operator_overload() {
-        let r1_1 = NumpyVec(vec![1.0, 2.0, 3.0]);
-        let r1_2 = NumpyVec(vec![4.0, 5.0, 6.0]);
+        let x = NumpyVec(vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
 
-        let x = NumpyVec(vec![r1_1, r1_2]);
-
-        let r2_1 = NumpyVec(vec![1.0]);
-        let r2_2 = NumpyVec(vec![2.0]);
-
-        let y = NumpyVec(vec![r2_1, r2_2]);
+        let y = NumpyVec(vec![vec![1.0], vec![2.0]]);
 
         let result = x + y;
 
@@ -325,10 +310,7 @@ mod tests {
 
         assert_eq!(result, vec![vec![1.0, 4.0, 9.0], vec![16.0, 25.0, 36.0]]);
 
-        let vec1 = NumpyVec(vec![1.0, 2.0, 3.0]);
-        let vec2 = NumpyVec(vec![4.0, 5.0, 6.0]);
-        let new_vec1 = vec![vec1, vec2];
-        let vec3 = NumpyVec(new_vec1);
+        let vec3 = NumpyVec(vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0]]);
 
         let result2 = vec3.clone() * vec3;
 
