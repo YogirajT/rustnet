@@ -17,7 +17,7 @@ cargo run < {file_path} ## It takes a while to train as it is not fully optimize
     |  |- b_1.csv ## Layer 1 biases.
     |  |- b_2.csv ## Output layer biases.
     |  |- w_1.csv ## Layer 1 weights.
-    |  |- w_2.csv ## Layer 2 weights.
+    |  |- w_2.csv ## Output layer weights.
     |...
 ```
 * These will be used to predict the input with `forward_propagation` function.
