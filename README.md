@@ -42,7 +42,10 @@ cargo run < {file_path} ## It takes a while to train as it is not fully optimize
 |  |  | matrix.rs | Test code |
 
 ## Architecture
+
 * m = sample size
+* 784 = number of pixels in a 28x28 image flattened in a 1 dimentional array
+
 ```
            OPERATION           DATA DIMENSIONS   WEIGHTS(N)
 
