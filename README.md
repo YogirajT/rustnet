@@ -133,5 +133,6 @@ tasks.json
 - [x] Build and train neural network.
 - [x] Add draw in terminal feature.
 - [x] Enable Multi threading for matrix operations.
+- [ ] Use Arc<[T]> instead of Vec<T>
 - [ ] Explore faster matrix operation (e.g. Strassen's algorithm for fast matrix multiplication)
 - [ ] Refactoring and optimizations with advanced rust.
