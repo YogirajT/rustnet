@@ -134,5 +134,10 @@ tasks.json
 - [x] Add draw in terminal feature.
 - [x] Enable Multi threading for matrix operations.
 - [ ] Use Arc<[T]> instead of Vec<T>
-- [ ] Explore faster matrix operation (e.g. Strassen's algorithm for fast matrix multiplication)
+- [ ] Explore faster matrix operation
+      ```
+      * Strassen's algorithm for fast matrix multiplication
+      * Techniques for femporal/spatial localization of cache
+      * SIMD
+      ```
 - [ ] Refactoring and optimizations with advanced rust.
