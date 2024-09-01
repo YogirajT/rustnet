@@ -137,7 +137,7 @@ tasks.json
 - [ ] Explore faster matrix operation
       ```
       * Strassen's algorithm for fast matrix multiplication
-      * Techniques for femporal/spatial localization of cache
+      * Techniques for temporal/spatial localization of cache
       * SIMD
       ```
 - [ ] Refactoring and optimizations with advanced rust.
