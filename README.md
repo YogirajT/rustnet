@@ -67,7 +67,7 @@ cargo run < {file_path} ## It takes a while to train as it is not fully optimize
 </picture>
 
 
-* If you wish to debug with vs code here's a sample configuration that works on Ubuntu 22.0 and VS code with 
+* If you wish to debug with vs code here's a sample configuration that works on Ubuntu 22.0 and VS code 
 ```
 launch.json
 {
